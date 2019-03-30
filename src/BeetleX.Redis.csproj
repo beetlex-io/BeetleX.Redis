@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Version>0.5</Version>
+    <Company>ikende.com</Company>
+    <Authors>henryfan</Authors>
+    <Copyright>Copyright © ikende.com 2019 email:henryfan@msn.com</Copyright>
+    <Description>redis client Components for dotNet core,support json,protobuf format</Description>
+    <PackageLicenseUrl>https://github.com/IKende/BeetleX.Redis/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/IKende/BeetleX.Redis</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BeetleX" Version="1.2.5.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="protobuf-net" Version="2.4.0" />
+  </ItemGroup>
+
+</Project>
