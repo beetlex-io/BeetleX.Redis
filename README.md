@@ -90,7 +90,33 @@ create HashTable
  var table = DB.CreateHashTable("myhash");
 ```
 ### operations
-
+```
+await table.Del("emp1");
+await table.Exists("emp1");
+await table.Get<Employee>("emp1");
+await table.Keys();
+await table.Len();
+await table.Get<Employee, Order>("emp", "order");
+await table.Get<Employee, Order, Customer>("emp", "order", "customer");
+await table.MSet(m => m["field1", GetEmployee(1)]["field2", GetCustomer(1)]);
+await table.Set("field1", GetEmployee(1));
+await table.SetNX("field", GetEmployee(1));
+```
+## Subscribe
+## Create subscriber
+```
+            var sub = db.Subscribe();
+            sub.Register<Employee>("test1");
+            sub.Receive = (o, e) =>
+            {
+                Console.WriteLine($"[{DateTime.Now}]{e.Channel}-{e.Type}:{Newtonsoft.Json.JsonConvert.SerializeObject(e.Data)}");
+            };
+            sub.Listen();
+```
+### Publish
+```
+await DB.Publish("test1", GetEmployee(i));
+```
 
 
 
