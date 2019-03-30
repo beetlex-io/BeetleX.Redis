@@ -63,9 +63,9 @@ create list
 ```
 ### operations
 ```
-await DB.CreateList<String>("List1").BLPop();
-await DB.CreateList<String>("List1").BRPop();
-await DB.CreateList<String>("List1").BRPopLPush("List2");
+await list.BLPop();
+await list.BRPop();
+await list.BRPopLPush("List2");
 await list.Index(0);
 await list.Insert(true, GetEmployee(2), GetEmployee(3));
 await list.Len();
