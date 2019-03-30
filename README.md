@@ -109,7 +109,7 @@ await table.SetNX("field", GetEmployee(1));
             sub.Register<Employee>("test1");
             sub.Receive = (o, e) =>
             {
-                Console.WriteLine($"[{DateTime.Now}]{e.Channel}-{e.Type}:{Newtonsoft.Json.JsonConvert.SerializeObject(e.Data)}");
+                Console.WriteLine($"[{DateTime.Now}]{e.Channel}-{e.Type}:{e.Data}");
             };
             sub.Listen();
 ```
