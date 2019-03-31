@@ -1,7 +1,26 @@
 # BeetleX.Redis
 A high-performance async/non-blocking  redis client components for dotnet core,default support json and protobuf data format
+
+
+## Performance test
+code:[https://github.com/IKende/BeetleX.Redis/tree/master/PerformanceTest](https://github.com/IKende/BeetleX.Redis/tree/master/PerformanceTest)
+```
+{"OrderID":10255,"CustomerID":"RICSU","EmployeeID":9,"OrderDate":"1996-07-12T00:00:00","RequiredDate":"1996-08-09T00:00:00","ShippedDate":"1996-07-15T00:00:00","ShipVia":3,"Freight":148.33,"ShipName":"Richter Supermarkt","ShipAddress":"Starenweg 5","ShipCity":"Genève","ShipPostalCode":"1204","ShipCountry":"Switzerland"}
+```
+## get/set 
+```
+SET_JSON using 1 threads run 100000 [use time 5.76s 17,370.26/sec]
+GET_JSON using 1 threads run 100000 [use time 5.92s 16,905.92/sec]
+SET_JSON using 4 threads run 100000 [use time 1.87s 53,407.17/sec]
+GET_JSON using 4 threads run 100000 [use time 1.93s 51,784.32/sec]
+SET_JSON using 8 threads run 100000 [use time 1.65s 60,517.8/sec]
+GET_JSON using 8 threads run 100000 [use time 1.56s 64,050.58/sec]
+
+```
+
 ## nuget
 https://www.nuget.org/packages/BeetleX.Redis/
+
 ## New db client
 ```
 RedisDB DB = new RedisDB();
