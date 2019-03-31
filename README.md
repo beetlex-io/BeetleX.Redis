@@ -1,5 +1,5 @@
 # BeetleX.Redis
-redis client components for dotnet core,support json,protobuf format
+A high-performance async/non-blocking  redis client components for dotnet core,default support json and protobuf data format
 ## nuget
 https://www.nuget.org/packages/BeetleX.Redis/
 ## New db client
