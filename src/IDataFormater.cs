@@ -29,8 +29,16 @@ namespace BeetleX.Redis
             {
 
                 var buffer = jsonExpend.SerializeJsonObject(data);
-                var headerstr = $"${buffer.Count}\r\n";
-                stream.Write(headerstr);
+                var hdata = Command.GetBodyHeaderLenData(buffer.Count);
+                if (hdata != null)
+                {
+                    stream.Write(hdata, 0, hdata.Length);
+                }
+                else
+                {
+                    var headerstr = $"${buffer.Count}\r\n";
+                    stream.Write(headerstr);
+                }
                 stream.Write(buffer.Array, buffer.Offset, buffer.Count);
             }
         }
@@ -49,8 +57,16 @@ namespace BeetleX.Redis
             {
 
                 var buffer = jsonExpend.SerializeProtobufObject(data);
-                var headerstr = $"${buffer.Count}\r\n";
-                stream.Write(headerstr);
+                var hdata = Command.GetBodyHeaderLenData(buffer.Count);
+                if (hdata != null)
+                {
+                    stream.Write(hdata, 0, hdata.Length);
+                }
+                else
+                {
+                    var headerstr = $"${buffer.Count}\r\n";
+                    stream.Write(headerstr);
+                }
                 stream.Write(buffer.Array, buffer.Offset, buffer.Count);
             }
         }

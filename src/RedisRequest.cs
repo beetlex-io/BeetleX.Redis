@@ -293,6 +293,8 @@ namespace BeetleX.Redis
                 Host?.Push(Client);
                 Completed?.Invoke(this);
                 TaskCompletion();
+                //ResultDispatch.DispatchCenter.Enqueue(this, 3);
+
             }
 
         }

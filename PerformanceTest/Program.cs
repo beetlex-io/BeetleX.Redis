@@ -5,25 +5,38 @@ namespace PerformanceTest
 {
     class Program
     {
+        public const string Host = "localhost";
+
         static void Main(string[] args)
         {
-       
+
             Test();
             Console.Read();
         }
 
         private static async void Test()
         {
+            TestCenter testCenter = new TestCenter();
+            await testCenter
+            .AddCases<BeetleX_SET>()
+            .AddCases<StackExchange_SET>()
+            .AddCases<StackExchange_Sync_SET>()
 
-            Console.WriteLine(await TestBase.Run<BeetleX_GET_JSON>(1, 100000));
-            Console.WriteLine(await TestBase.Run<StackExchange_GET_JSON>(1, 100000));
-            Console.WriteLine(await TestBase.Run<BeetleX_GET_JSON>(4, 100000));
-            Console.WriteLine(await TestBase.Run<StackExchange_GET_JSON>(4, 100000));
+            .AddCases<BeetleX_GET>()
+            .AddCases<StackExchange_GET>()
+            .AddCases<StackExchange_Sync_GET>()
 
-            Console.WriteLine(await TestBase.Run<BeetleX_SET_JSON>(1, 100000));
-            Console.WriteLine(await TestBase.Run<StackExchange_SET_JSON>(1, 100000));
-            Console.WriteLine(await TestBase.Run<BeetleX_SET_JSON>(4, 100000));
-            Console.WriteLine(await TestBase.Run<StackExchange_SET_JSON>(4, 100000));
+            .AddCases<BeetleX_MGET>()
+            .AddCases<StackExchange_MGET>()
+            .AddCases<StackExchange_Sync_MGET>()
+
+            .AddTest(1, 100000)
+            .AddTest(2, 100000)
+            .AddTest(4, 100000)
+            //.AddTest(8, 200000)
+            //.AddTest(16, 500000)
+            //.AddTest(24, 500000)
+            .Run();
         }
     }
 }
