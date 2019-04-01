@@ -7,14 +7,16 @@ code:[https://github.com/IKende/BeetleX.Redis/tree/master/PerformanceTest](https
 ```
 {"OrderID":10255,"CustomerID":"RICSU","EmployeeID":9,"OrderDate":"1996-07-12T00:00:00","RequiredDate":"1996-08-09T00:00:00","ShippedDate":"1996-07-15T00:00:00","ShipVia":3,"Freight":148.33,"ShipName":"Richter Supermarkt","ShipAddress":"Starenweg 5","ShipCity":"Genève","ShipPostalCode":"1204","ShipCountry":"Switzerland"}
 ```
-## get/set 
+## get/set (BeetleX vs  StackExchange)
 ```
-SET_JSON using 1 threads run 100000 [use time 5.76s 17,370.26/sec]
-GET_JSON using 1 threads run 100000 [use time 5.92s 16,905.92/sec]
-SET_JSON using 4 threads run 100000 [use time 1.87s 53,407.17/sec]
-GET_JSON using 4 threads run 100000 [use time 1.93s 51,784.32/sec]
-SET_JSON using 8 threads run 100000 [use time 1.65s 60,517.8/sec]
-GET_JSON using 8 threads run 100000 [use time 1.56s 64,050.58/sec]
+[2019/4/1 8:45:25]BeetleX_GET_JSON 		using 1 threads run 100000 [use time 6.18s 16,179.44/sec]
+[2019/4/1 8:45:39]StackExchange_GET_JSON 	using 1 threads run 100000 [use time 13.27s 7,536.65/sec]
+[2019/4/1 8:45:40]BeetleX_GET_JSON		using 4 threads run 100000 [use time 1.96s 50,979.21/sec]
+[2019/4/1 8:45:43]StackExchange_GET_JSON 	using 4 threads run 100000 [use time 2.48s 40,289.81/sec]
+[2019/4/1 8:45:49]BeetleX_SET_JSON 		using 1 threads run 100000 [use time 5.86s 17,070.36/sec]
+[2019/4/1 8:46:02]StackExchange_SET_JSON 	using 1 threads run 100000 [use time 12.82s 7,801.39/sec]
+[2019/4/1 8:46:04]BeetleX_SET_JSON 		using 4 threads run 100000 [use time 1.92s 51,977.16/sec]
+[2019/4/1 8:46:06]StackExchange_SET_JSON 	using 4 threads run 100000 [use time 2.24s 44,628.63/sec]
 
 ```
 
