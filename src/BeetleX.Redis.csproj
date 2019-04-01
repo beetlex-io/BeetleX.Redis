@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <Version>0.5</Version>
+    <Version>0.5.2</Version>
     <Company>ikende.com</Company>
     <Authors>henryfan</Authors>
     <Copyright>Copyright © ikende.com 2019 email:henryfan@msn.com</Copyright>

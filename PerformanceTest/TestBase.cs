@@ -81,7 +81,7 @@ namespace PerformanceTest
 
             public override string ToString()
             {
-                return $"{Name} using {Threads} threads run {Count} [use time {Seconds.ToString("###,###.##")}s {(Count / Seconds).ToString("###,###.##")}/sec]";
+                return $"[{DateTime.Now}]{Name} using {Threads} threads run {Count} [use time {Seconds.ToString("###,###.##")}s {(Count / Seconds).ToString("###,###.##")}/sec]";
             }
 
         }
