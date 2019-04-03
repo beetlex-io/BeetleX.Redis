@@ -4,12 +4,58 @@ A high-performance async/non-blocking  redis client components for dotnet core,d
 ## nuget
 https://www.nuget.org/packages/BeetleX.Redis/
 
+## setting
+```
+  Redis.Default.DataFormater = new JsonFormater();
+  Redis.Default.Host.AddWriteHost("localhost");
+```
+## GSET/SET
+```
+await Redis.Get<Employee>("nonexisting");
+await Redis.Set("emp3", GetEmployee(3));
+await Redis.Get<Employee>("emp3");
+```
+## MSET/MGET
+```
+await table.MSet(("field1", GetEmployee(1)), ("field2", GetEmployee(2)));
+await Redis.Get<Employee, Order, Customer>("emp1", "order1", "customer1");
+```
+## List
+```
+var list = Redis.CreateList<Employee>("employees");
+await list.Push(GetEmployee(1));
+await list.Insert(true, GetEmployee(2), GetEmployee(3));
+await list.Range(0, -1);
+```
+## Hash
+```
+var table = Redis.CreateHashTable("myhash");
+await table.MSet(("field1", GetEmployee(1)), ("field2", GetEmployee(2)));
+await table.Get<Employee, Employee>("field1", "field2");
+await table.Del("emp2");
+await table.Keys();
+```
+## Subscribe
+```
+var subscribe = Redis.Subscribe();
+subscribe.Register<Employee>("employees");
+subscribe.Receive = (o, e) =>
+{
+       Console.WriteLine($"{e.Type} {e.Channel} {e.Data}");
+};
+subscribe.Listen();
+```
+```
+await Redis.Publish("employees", GetEmployee(1));
+```
+
+
 ## New db client
 ```
 RedisDB DB = new RedisDB();
-DB.AddWriteHost("192.168.2.19");
+DB.Host.AddWriteHost("192.168.2.19");
 // set password
-DB.AddWriteHost("192.168.2.19").Password=123456;
+DB.Host.AddWriteHost("192.168.2.19").Password=123456;
 ```
 ### Json db
 ```
@@ -38,8 +84,8 @@ await DB.IncrbyFloat("mykey", 0.1f);
 await DB.Keys("t??");
 await DB.MGet<string, string>("key1", "key2");
 await DB.MGet<string, string, string>("key1", "aaa", "key2");
-await DB.MSet(m => m["key1", "hello"]["key2", "world"]);
-await DB.MSetNX(m => m["key1", "hello"]["key2", "there"]);
+await DB.MSet(("key1", "hello"),("key2", "world"));
+await DB.MSetNX(("key1", "hello"),("key2", "there"));
 await DB.Move("one", 9);
 await DB.PSetEX("mykey", 1000, "hello");
 await DB.Persist("mykey");
@@ -100,7 +146,7 @@ await table.Keys();
 await table.Len();
 await table.Get<Employee, Order>("emp", "order");
 await table.Get<Employee, Order, Customer>("emp", "order", "customer");
-await table.MSet(m => m["field1", GetEmployee(1)]["field2", GetCustomer(1)]);
+await table.MSet(("field1", GetEmployee(1)),("field2", GetCustomer(1)));
 await table.Set("field1", GetEmployee(1));
 await table.SetNX("field", GetEmployee(1));
 ```
