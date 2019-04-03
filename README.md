@@ -17,7 +17,7 @@ await Redis.Get<Employee>("emp3");
 ```
 ## MSET/MGET
 ```
-await table.MSet(("field1", GetEmployee(1)), ("field2", GetEmployee(2)));
+await Redis.Set(("field1", GetEmployee(1)), ("field2", GetEmployee(2)));
 await Redis.Get<Employee, Order, Customer>("emp1", "order1", "customer1");
 ```
 ## List
