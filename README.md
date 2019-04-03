@@ -4,12 +4,12 @@ A high-performance async/non-blocking  redis client components for dotnet core,d
 ## nuget
 https://www.nuget.org/packages/BeetleX.Redis/
 
-## setting
+## Setting
 ```
   Redis.Default.DataFormater = new JsonFormater();
   Redis.Default.Host.AddWriteHost("localhost");
 ```
-## GSET/SET
+## SET/SET
 ```
 await Redis.Get<Employee>("nonexisting");
 await Redis.Set("emp3", GetEmployee(3));
