@@ -164,7 +164,7 @@ namespace BeetleX.Redis
                 if (redisClient != null)
                     redisClient.TcpClient.DisConnect();
                 Result result;
-                RedisHost host = mDB.GetWriteHost();
+                RedisHost host = mDB.Host.GetWriteHost();
                 if (host == null)
                 {
                     result = new Result() { ResultType = ResultType.NetError, Messge = "redis server is not available" };

@@ -52,7 +52,7 @@ namespace BeetleX.Redis
         public SerializerExpand()
         {
             Memory = new JsonMemoryStream(1024 * 32);
-
+            InitStream();
         }
 
         private System.IO.StreamReader StreamReader;
@@ -62,7 +62,9 @@ namespace BeetleX.Redis
         private void InitStream()
         {
             StreamReader = new StreamReader(Memory);
+
             StreamWriter = new StreamWriter(Memory);
+
         }
 
         private const int BufferSize = 1024 * 4;
@@ -82,14 +84,10 @@ namespace BeetleX.Redis
                     Memory.Write(mBuffer, 0, len);
                     length -= len;
                 }
-
                 Memory.Position = 0;
-                using (System.IO.StreamReader streamReader = new System.IO.StreamReader(Memory))
-                {
-                    JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
-                    object result = jsonSerializer.Deserialize(streamReader, type);
-                    return result;
-                }
+                JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
+                object result = jsonSerializer.Deserialize(StreamReader, type);
+                return result;
             }
             catch (Exception e_)
             {
@@ -104,13 +102,10 @@ namespace BeetleX.Redis
         {
             try
             {
-                using (System.IO.StreamWriter streamWriter = new System.IO.StreamWriter(Memory))
-                {
-                    JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
-                    jsonSerializer.Serialize(streamWriter, data, data.GetType());
-                    streamWriter.Flush();
-                    return GetBuffer();
-                }
+                JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
+                jsonSerializer.Serialize(StreamWriter, data, data.GetType());
+                StreamWriter.Flush();
+                return GetBuffer();
             }
             catch (Exception e_)
             {
@@ -141,6 +136,7 @@ namespace BeetleX.Redis
 
         public void Reset()
         {
+
             Memory.SetLength(0);
             Memory.Position = 0;
         }

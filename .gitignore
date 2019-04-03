@@ -5,3 +5,6 @@ src/Properties/
 PerformanceTest/Properties/
 PerformanceTest/bin/
 PerformanceTest/obj/
+.vs/BeetleX.Redis/DesignTimeBuild/
+BeetleX.Redis.Samples/bin/
+BeetleX.Redis.Samples/obj/

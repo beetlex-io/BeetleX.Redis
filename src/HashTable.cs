@@ -139,10 +139,13 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
-        public async ValueTask<string> MSet(Func<Commands.HMSET, Commands.HMSET> handler)
+        public async ValueTask<string> MSet(params (string, object)[] datas)
         {
             Commands.HMSET cmd = new Commands.HMSET(Key, DataFormater);
-            handler?.Invoke(cmd);
+            foreach (var item in datas)
+            {
+                cmd = cmd[item.Item1, item.Item2];
+            }
             var result = await DB.Execute(cmd, typeof(string));
             if (result.IsError)
                 throw new RedisException(result.Messge);

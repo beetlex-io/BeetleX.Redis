@@ -6,16 +6,30 @@ using System.Threading.Tasks;
 
 namespace BeetleX.Redis
 {
-    public class RedisDB
+    public class RedisDB : IHostHandler
     {
-        public RedisDB(int db = 0, IDataFormater dataFormater = null)
+        public RedisDB(int db = 0, IDataFormater dataFormater = null, IHostHandler hostHandler = null)
         {
             DB = db;
             DataFormater = dataFormater;
-            mDetectionTime = new System.Threading.Timer(OnDetection, null, 1000, 1000);
+            if (hostHandler == null)
+            {
+                mDetectionTime = new System.Threading.Timer(OnDetection, null, 1000, 1000);
+                this.Host = this;
+            }
+            else
+            {
+                this.Host = hostHandler;
+            }
         }
 
         private System.Threading.Timer mDetectionTime;
+
+        private static RedisDB mDefault = new RedisDB();
+
+        internal static RedisDB Default => mDefault;
+
+        public IHostHandler Host { get; set; }
 
         private void OnDetection(object state)
         {
@@ -48,7 +62,13 @@ namespace BeetleX.Redis
 
         public int DB { get; set; }
 
-        public RedisHost AddWriteHost(string host, int port = 6379)
+        public RedisDB Cloneable(IDataFormater dataFormater = null)
+        {
+            var result = new RedisDB(this.DB, dataFormater, this);
+            return result;
+        }
+
+        RedisHost IHostHandler.AddWriteHost(string host, int port = 6379)
         {
             RedisHost redisHost = new RedisHost(DB, host, port);
             mWriteHosts.Add(redisHost);
@@ -56,7 +76,7 @@ namespace BeetleX.Redis
             return redisHost;
         }
 
-        public RedisHost AddReadHost(string host, int port = 6379)
+        RedisHost IHostHandler.AddReadHost(string host, int port = 6379)
         {
             RedisHost redisHost = new RedisHost(DB, host, port);
             mReadHosts.Add(redisHost);
@@ -64,7 +84,7 @@ namespace BeetleX.Redis
             return redisHost;
         }
 
-        public RedisHost GetWriteHost()
+        RedisHost IHostHandler.GetWriteHost()
         {
             var items = mWriteActives;
             for (int i = 0; i < items.Length; i++)
@@ -75,7 +95,7 @@ namespace BeetleX.Redis
             return null;
         }
 
-        public RedisHost GetReadHost()
+        RedisHost IHostHandler.GetReadHost()
         {
             var items = mReadActives;
             for (int i = 0; i < items.Length; i++)
@@ -83,7 +103,7 @@ namespace BeetleX.Redis
                 if (items[i].Available)
                     return items[i];
             }
-            return GetWriteHost();
+            return Host.GetWriteHost();
         }
 
         public Subscriber Subscribe()
@@ -94,7 +114,7 @@ namespace BeetleX.Redis
 
         public async Task<Result> Execute(Command cmd, params Type[] types)
         {
-            var host = cmd.Read ? GetReadHost() : GetWriteHost();
+            var host = cmd.Read ? Host.GetReadHost() : Host.GetWriteHost();
             if (host == null)
             {
                 return new Result() { ResultType = ResultType.NetError, Messge = "redis server is not available" };
@@ -221,20 +241,26 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
-        public async ValueTask<string> MSet(Func<Commands.MSET, Commands.MSET> handler)
+        public async ValueTask<string> MSet(params (string, object)[] datas)
         {
             Commands.MSET cmd = new Commands.MSET(DataFormater);
-            handler(cmd);
+            foreach (var item in datas)
+            {
+                cmd = cmd[item.Item1, item.Item2];
+            }
             var result = await Execute(cmd, typeof(string));
             if (result.IsError)
                 throw new RedisException(result.Messge);
             return (string)result.Value;
         }
 
-        public async ValueTask<long> MSetNX(Func<Commands.MSETNX, Commands.MSETNX> handler)
+        public async ValueTask<long> MSetNX(params (string, object)[] datas)
         {
             Commands.MSETNX cmd = new Commands.MSETNX(DataFormater);
-            handler(cmd);
+            foreach (var item in datas)
+            {
+                cmd = cmd[item.Item1, item.Item2];
+            }
             var result = await Execute(cmd, typeof(string));
             if (result.IsError)
                 throw new RedisException(result.Messge);

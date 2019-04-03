@@ -27,7 +27,6 @@ namespace BeetleX.Redis
         {
             using (SerializerExpand jsonExpend = client.SerializerExpand)
             {
-
                 var buffer = jsonExpend.SerializeJsonObject(data);
                 var hdata = Command.GetBodyHeaderLenData(buffer.Count);
                 if (hdata != null)

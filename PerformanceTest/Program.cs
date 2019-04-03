@@ -5,7 +5,7 @@ namespace PerformanceTest
 {
     class Program
     {
-        public const string Host = "localhost";
+        public const string Host = "192.168.2.18";
 
         static void Main(string[] args)
         {
