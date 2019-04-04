@@ -23,8 +23,8 @@ namespace BeetleX.Redis.Samples
 
         static async void Test()
         {
-            await Redis.Default.Flushall();
-
+          //  await Redis.Default.Flushall();
+            
             Write(await Redis.Get<Employee>("nonexisting"));
             Write(await Redis.Set("emp3", GetEmployee(3)));
             Write(await Redis.Get<Employee>("emp3"));
@@ -122,7 +122,7 @@ namespace BeetleX.Redis.Samples
             Write(await list.Range(0, -1));
             Line();
 
-            await Redis.Default.Flushall();
+          //  await Redis.Default.Flushall();
             var table = Redis.CreateHashTable("myhash");
             Write(await table.MSet(("emp1", GetEmployee(1))));
             Write(await table.Del("emp1"));

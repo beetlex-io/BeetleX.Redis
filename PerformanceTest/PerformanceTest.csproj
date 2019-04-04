@@ -7,9 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BeetleX.Redis" Version="0.6.6" />
     <PackageReference Include="Northwind.Data" Version="1.0.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.0.571" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\BeetleX.Redis.csproj" />
   </ItemGroup>
 
   <ItemGroup>

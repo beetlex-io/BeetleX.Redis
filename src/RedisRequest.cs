@@ -36,11 +36,31 @@ namespace BeetleX.Redis
 
         public Type[] Types { get; private set; }
 
+        private int mFreeLength;
+
+        private void FreeLine(PipeStream stream)
+        {
+            if (stream.Length >= 2)
+            {
+                stream.ReadFree(2);
+                mFreeLength = 0;
+            }
+            else
+            {
+                mFreeLength = 2;
+            }
+        }
+
         private void OnReceive(IClient c, ClientReceiveArgs reader)
         {
             ResultType resultType;
             string msg;
             PipeStream pipeStream = reader.Stream.ToPipeStream();
+            if (mFreeLength > 0)
+            {
+                pipeStream.ReadFree(mFreeLength);
+                mFreeLength = 0;
+            }
             if (Result.Status == ResultStatus.None)
             {
                 if (pipeStream.TryReadLine(out string line))
@@ -200,7 +220,8 @@ namespace BeetleX.Redis
                                 var item = new ResultItem { Type = ResultType.Null, Data = null };
                                 Result.Data.Add(item);
                             }
-                            pipeStream.ReadFree(2);
+                            FreeLine(pipeStream);
+                            //pipeStream.ReadFree(2);
                             Result.BodyLength = null;
                             Result.ArrayReadCount++;
                             Result.ReadCount++;
@@ -226,7 +247,8 @@ namespace BeetleX.Redis
                             };
                             Result.Data.Add(item);
                         }
-                        pipeStream.ReadFree(2);
+                        FreeLine(pipeStream);
+                        //pipeStream.ReadFree(2);
                         Result.ReadCount++;
                         Result.BodyLength = null;
                         Result.ArrayReadCount++;

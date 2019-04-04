@@ -11,7 +11,7 @@ namespace PerformanceTest
         public BeetleX_SET()
         {
             RedisDB = new BeetleX.Redis.RedisDB(0, new BeetleX.Redis.JsonFormater());
-            RedisDB.AddWriteHost(Program.Host);
+            RedisDB.Host.AddWriteHost(Program.Host);
         }
 
         private BeetleX.Redis.RedisDB RedisDB;

@@ -1,6 +1,5 @@
 ﻿using BeetleX.Buffers;
 using BeetleX.Clients;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -85,9 +84,13 @@ namespace BeetleX.Redis
                     length -= len;
                 }
                 Memory.Position = 0;
-                JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
-                object result = jsonSerializer.Deserialize(StreamReader, type);
-                return result;
+                //JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
+                //object result = jsonSerializer.Deserialize(StreamReader, type);
+                //return result;
+                var task = SpanJson.JsonSerializer.NonGeneric.Utf8.DeserializeAsync(Memory, type).AsTask();
+                task.Wait();
+                return task.Result;
+
             }
             catch (Exception e_)
             {
@@ -100,18 +103,21 @@ namespace BeetleX.Redis
 
         public ArraySegment<byte> SerializeJsonObject(Object data)
         {
-            try
-            {
-                JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
-                jsonSerializer.Serialize(StreamWriter, data, data.GetType());
-                StreamWriter.Flush();
-                return GetBuffer();
-            }
-            catch (Exception e_)
-            {
-                InitStream();
-                throw new RedisException($"json serialize error {e_.Message}", e_);
-            }
+            var task = SpanJson.JsonSerializer.NonGeneric.Utf8.SerializeAsync(data, Memory).AsTask();
+            task.Wait();
+            return GetBuffer();
+            //try
+            //{
+            //    JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
+            //    jsonSerializer.Serialize(StreamWriter, data, data.GetType());
+            //    StreamWriter.Flush();
+            //    return GetBuffer();
+            //}
+            //catch (Exception e_)
+            //{
+            //    InitStream();
+            //    throw new RedisException($"json serialize error {e_.Message}", e_);
+            //}
         }
 
         public object DeserializeProtobufObject(System.IO.Stream stream, int length, Type type)

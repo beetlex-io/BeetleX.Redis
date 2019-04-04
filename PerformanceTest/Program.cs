@@ -18,7 +18,7 @@ namespace PerformanceTest
         {
             TestCenter testCenter = new TestCenter();
             await testCenter
-            .AddCases<BeetleX_SET>()
+             .AddCases<BeetleX_SET>()
             .AddCases<StackExchange_SET>()
             .AddCases<StackExchange_Sync_SET>()
 

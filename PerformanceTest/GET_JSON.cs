@@ -12,7 +12,7 @@ namespace PerformanceTest
         public BeetleX_GET()
         {
             RedisDB = new RedisDB(0, new JsonFormater());
-            RedisDB.AddWriteHost(Program.Host);
+            RedisDB.Host.AddWriteHost(Program.Host);
         }
 
         private RedisDB RedisDB;
@@ -40,12 +40,14 @@ namespace PerformanceTest
         }
     }
 
+
+
     public class BeetleX_MGET : TestBase
     {
         public BeetleX_MGET()
         {
             RedisDB = new RedisDB(0, new JsonFormater());
-            RedisDB.AddWriteHost(Program.Host);
+            RedisDB.Host.AddWriteHost(Program.Host);
         }
 
         private RedisDB RedisDB;
@@ -61,9 +63,11 @@ namespace PerformanceTest
         {
             while (true)
             {
-                for (int i = 10248; i <= 11077; i = i + 2)
+                for (int i = 10248; i <= 11077; i = i + 3)
                 {
-                    var item = await RedisDB.MGet<Northwind.Data.Order, Northwind.Data.Order>(i.ToString(), (i + 1).ToString());
+                    var item = await RedisDB.MGet<Northwind.Data.Order, Northwind.Data.Order>
+                        (i.ToString(), 
+                        (i + 1).ToString());
                     if (!this.Increment())
                     {
                         return;
