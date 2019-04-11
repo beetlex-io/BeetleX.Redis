@@ -5,30 +5,30 @@ A high-performance async/non-blocking  redis client components for dotnet core,d
 https://www.nuget.org/packages/BeetleX.Redis/
 
 ## Setting
-```
+``` csharp
   Redis.Default.DataFormater = new JsonFormater();
   Redis.Default.Host.AddWriteHost("localhost");
 ```
 ## SET/SET
-```
+``` csharp
 await Redis.Get<Employee>("nonexisting");
 await Redis.Set("emp3", GetEmployee(3));
 await Redis.Get<Employee>("emp3");
 ```
 ## MSET/MGET
-```
+``` csharp
 await Redis.Set(("field1", GetEmployee(1)), ("field2", GetEmployee(2)));
 await Redis.Get<Employee, Order, Customer>("emp1", "order1", "customer1");
 ```
 ## List
-```
+``` csharp
 var list = Redis.CreateList<Employee>("employees");
 await list.Push(GetEmployee(1));
 await list.Insert(true, GetEmployee(2), GetEmployee(3));
 await list.Range(0, -1);
 ```
 ## Hash
-```
+``` csharp
 var table = Redis.CreateHashTable("myhash");
 await table.MSet(("field1", GetEmployee(1)), ("field2", GetEmployee(2)));
 await table.Get<Employee, Employee>("field1", "field2");
@@ -36,7 +36,7 @@ await table.Del("emp2");
 await table.Keys();
 ```
 ## Subscribe
-```
+``` csharp
 var subscribe = Redis.Subscribe();
 subscribe.Register<Employee>("employees");
 subscribe.Receive = (o, e) =>
@@ -45,28 +45,28 @@ subscribe.Receive = (o, e) =>
 };
 subscribe.Listen();
 ```
-```
+``` csharp
 await Redis.Publish("employees", GetEmployee(1));
 ```
 
 
 ## New db client
-```
+``` csharp
 RedisDB DB = new RedisDB();
 DB.Host.AddWriteHost("192.168.2.19");
 // set password
 DB.Host.AddWriteHost("192.168.2.19").Password=123456;
 ```
 ### Json db
-```
+``` csharp
 RedisDB DB = new RedisDB(0, new JsonFormater());
 ```
 ### Protobuf db
-```
+``` csharp
 RedisDB DB = new RedisDB(0, new ProtobufFormater());
 ```
 ### Basic operations
-```
+``` csharp
 await DB.Decr("mykey")
 await DB.Decrby("mykey", 5);
 await DB.Del("mykey");
@@ -106,11 +106,11 @@ await DB.Type("key2");
 ```
 ## List
 create list
-```
+``` csharp
  var list = DB.CreateList<Employee>("employees");
 ```
 ### operations
-```
+``` csharp
 await list.BLPop();
 await list.BRPop();
 await list.BRPopLPush("List2");
@@ -134,11 +134,11 @@ await list.Range(-3, 2);
 
 ## HashTable
 create HashTable
-```
+``` csharp
  var table = DB.CreateHashTable("myhash");
 ```
 ### operations
-```
+``` csharp
 await table.Del("emp1");
 await table.Exists("emp1");
 await table.Get<Employee>("emp1");
@@ -152,7 +152,7 @@ await table.SetNX("field", GetEmployee(1));
 ```
 ## Subscribe
 ## Create subscriber
-```
+``` csharp
             var sub = db.Subscribe();
             sub.Register<Employee>("test1");
             sub.Receive = (o, e) =>
@@ -162,7 +162,7 @@ await table.SetNX("field", GetEmployee(1));
             sub.Listen();
 ```
 ### Publish
-```
+``` csharp
 await DB.Publish("test1", GetEmployee(i));
 ```
 ## Performance test
