@@ -8,7 +8,7 @@ namespace BeetleX.Redis.Samples
         static void Main(string[] args)
         {
             Redis.Default.DataFormater = new JsonFormater();
-            Redis.Default.Host.AddWriteHost("localhost");
+            Redis.Default.Host.AddWriteHost("192.168.2.19");
             var subscribe = Redis.Subscribe();
             subscribe.Register<Employee>("employees");
             subscribe.Receive = (o, e) =>
@@ -23,7 +23,7 @@ namespace BeetleX.Redis.Samples
 
         static async void Test()
         {
-          //  await Redis.Default.Flushall();
+            await Redis.Default.Flushall();
             
             Write(await Redis.Get<Employee>("nonexisting"));
             Write(await Redis.Set("emp3", GetEmployee(3)));

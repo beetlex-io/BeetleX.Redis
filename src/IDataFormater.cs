@@ -1,4 +1,5 @@
 ﻿using BeetleX.Buffers;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -42,6 +43,45 @@ namespace BeetleX.Redis
             }
         }
     }
+
+    public class MessagePackFormater : IDataFormater
+    {
+        public object DeserializeObject(Type type, RedisClient client, PipeStream stream, int length)
+        {
+            var buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(length);
+            try
+            {
+                stream.Read(buffer,0,length);
+                return MessagePackSerializer.Deserialize(type, new ReadOnlyMemory<byte>(buffer, 0, length));
+            }
+            finally
+            {
+                System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
+
+        public void SerializeObject(object data, RedisClient client, PipeStream stream)
+        {
+            // MessagePackSerializer.NonGeneric.Serialize(data.GetType(), stream, data);
+            using (SerializerExpand jsonExpend = client.SerializerExpand)
+            {
+
+                var buffer = jsonExpend.SerializeMessagePack(data);
+                var hdata = Command.GetBodyHeaderLenData(buffer.Count);
+                if (hdata != null)
+                {
+                    stream.Write(hdata, 0, hdata.Length);
+                }
+                else
+                {
+                    var headerstr = $"${buffer.Count}\r\n";
+                    stream.Write(headerstr);
+                }
+                stream.Write(buffer.Array, buffer.Offset, buffer.Count);
+            }
+        }
+    }
+
 
     public class ProtobufFormater : IDataFormater
     {

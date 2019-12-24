@@ -1,5 +1,6 @@
 ﻿using BeetleX.Buffers;
 using BeetleX.Clients;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -130,6 +131,14 @@ namespace BeetleX.Redis
             ProtoBuf.Meta.RuntimeTypeModel.Default.Serialize(Memory, data);
             return GetBuffer();
         }
+
+        public ArraySegment<byte> SerializeMessagePack(object data)
+        {
+            MessagePackSerializer.Serialize(data.GetType(), Memory, data);
+            return GetBuffer();
+        }
+            
+
 
 
         public System.IO.MemoryStream Memory { get; private set; }
