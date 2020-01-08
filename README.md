@@ -8,6 +8,10 @@ https://www.nuget.org/packages/BeetleX.Redis/
 ``` csharp
   Redis.Default.DataFormater = new JsonFormater();
   Redis.Default.Host.AddWriteHost("localhost");
+  //ssl
+  Redis.Default.Host.AddWriteHost("localhost",6378,true);
+  //password 
+  Redis.Default.Host.AddWriteHost("localhost")..Password="123456"
 ```
 ## SET/SET
 ``` csharp
