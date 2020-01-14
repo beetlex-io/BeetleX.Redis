@@ -1,243 +1,90 @@
 ﻿using BeetleX.Redis;
+using CodeBenchmark;
 using Northwind.Data;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PerformanceTest
 {
-    public class BeetleX_GET : TestBase
+
+
+    [System.ComponentModel.Category("Redis.Get")]
+    public class BeetleX_Get : BeetleX_Base
     {
-        public BeetleX_GET()
+        public async override Task Execute()
         {
-            RedisDB = new RedisDB(0, new JsonFormater());
-            RedisDB.Host.AddWriteHost(Program.Host);
+            await RedisDB.Get<Northwind.Data.Order>(OrderHelper.GetOrderID().ToString());
         }
+    }
 
-        private RedisDB RedisDB;
-
-
-        protected override void OnTest()
+    [System.ComponentModel.Category("Redis.MGet")]
+    public class BeetleX_MGet : BeetleX_Base
+    {
+        public async override Task Execute()
         {
-            base.OnTest();
-            RunTest();
-        }
-
-        private async void RunTest()
-        {
-            while (true)
-            {
-                for (int i = 10248; i <= 11077; i++)
-                {
-                    await RedisDB.Get<Northwind.Data.Order>(i.ToString());
-                    if (!this.Increment())
-                    {
-                        return;
-                    }
-                }
-            }
+            var id = OrderHelper.GetOrderID();
+            await RedisDB.MGet<Northwind.Data.Order, Northwind.Data.Order>
+                        (id.ToString(),
+                        (id + 1).ToString());
         }
     }
 
 
-
-    public class BeetleX_MGET : TestBase
+    [System.ComponentModel.Category("Redis.Get")]
+    public class StackExchange_AsyncGet :StackExchangeBase
     {
-        public BeetleX_MGET()
+        public async override Task Execute()
         {
-            RedisDB = new RedisDB(0, new JsonFormater());
-            RedisDB.Host.AddWriteHost(Program.Host);
-        }
-
-        private RedisDB RedisDB;
-
-
-        protected override void OnTest()
-        {
-            base.OnTest();
-            RunTest();
-        }
-
-        private async void RunTest()
-        {
-            while (true)
-            {
-                for (int i = 10248; i <= 11077; i = i + 3)
-                {
-                    var item = await RedisDB.MGet<Northwind.Data.Order, Northwind.Data.Order>
-                        (i.ToString(), 
-                        (i + 1).ToString());
-                    if (!this.Increment())
-                    {
-                        return;
-                    }
-                }
-            }
+            var i = OrderHelper.GetOrderID();
+            var data=  await RedisDB.StringGetAsync(i.ToString());
+            var item = Newtonsoft.Json.JsonConvert.DeserializeObject<Northwind.Data.Order>(data);
         }
     }
 
-    public class StackExchange_GET : TestBase
+    [System.ComponentModel.Category("Redis.MGet")]
+    public class StackExchange_AsyncMGet :StackExchangeBase
     {
-        public StackExchange_GET()
+        public async override Task Execute()
         {
-            ConfigurationOptions options = ConfigurationOptions.Parse(Program.Host);
-            options.AsyncTimeout = 20 * 1000;
-            options.SyncTimeout = 20 * 1000;
-            Redis = ConnectionMultiplexer.Connect(options);
-            RedisDB = Redis.GetDatabase(0);
+            var i = OrderHelper.GetOrderID();
+            var values = await RedisDB.StringGetAsync(new RedisKey[] { i.ToString(), (i + 1).ToString() });
+            object item1, item2;
+            if (!values[0].IsNullOrEmpty)
+                item1 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[0], typeof(Northwind.Data.Order));
+            if (!values[1].IsNullOrEmpty)
+                item2 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[1], typeof(Northwind.Data.Order));
         }
 
-        private ConnectionMultiplexer Redis;
+    }
 
-        private IDatabase RedisDB;
-
-        protected override void OnTest()
+    [System.ComponentModel.Category("Redis.Get")]
+    public class StackExchange_SyncGet :StackExchangeBase
+    {
+        public override Task Execute()
         {
-            base.OnTest();
-            RunTest();
-        }
-
-        private async void RunTest()
-        {
-            while (true)
-            {
-                for (int i = 10248; i <= 11077; i++)
-                {
-                    var data = await RedisDB.StringGetAsync(i.ToString());
-                    var item = Newtonsoft.Json.JsonConvert.DeserializeObject<Northwind.Data.Order>(data);
-                    if (!this.Increment())
-                    {
-                        return;
-                    }
-                }
-            }
+            var i = OrderHelper.GetOrderID();
+            var data = RedisDB.StringGet(i.ToString());
+            var item = Newtonsoft.Json.JsonConvert.DeserializeObject<Northwind.Data.Order>(data);
+            return base.Execute();
         }
     }
 
-
-    public class StackExchange_MGET : TestBase
+    [System.ComponentModel.Category("Redis.MGet")]
+    public class StackExchange_SyncMGet : StackExchangeBase
     {
-        public StackExchange_MGET()
+        public override Task Execute()
         {
-            ConfigurationOptions options = ConfigurationOptions.Parse(Program.Host);
-            options.AsyncTimeout = 20 * 1000;
-            options.SyncTimeout = 20 * 1000;
-            Redis = ConnectionMultiplexer.Connect(options);
-            RedisDB = Redis.GetDatabase(0);
-        }
-
-        private ConnectionMultiplexer Redis;
-
-        private IDatabase RedisDB;
-
-        protected override void OnTest()
-        {
-            base.OnTest();
-            RunTest();
-        }
-
-        private async void RunTest()
-        {
-            while (true)
-            {
-                for (int i = 10248; i <= 11077; i = i + 2)
-                {
-
-                    var values = await RedisDB.StringGetAsync(new RedisKey[] { i.ToString(), (i + 1).ToString() });
-                    object item1, item2;
-                    if (!values[0].IsNullOrEmpty)
-                        item1 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[0], typeof(Northwind.Data.Order));
-                    if (!values[1].IsNullOrEmpty)
-                        item2 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[1], typeof(Northwind.Data.Order));
-
-                    if (!this.Increment())
-                    {
-                        return;
-                    }
-                }
-            }
-        }
-    }
-
-
-    public class StackExchange_Sync_GET : TestBase
-    {
-        public StackExchange_Sync_GET()
-        {
-            ConfigurationOptions options = ConfigurationOptions.Parse(Program.Host);
-            options.AsyncTimeout = 20 * 1000;
-            options.SyncTimeout = 20 * 1000;
-            Redis = ConnectionMultiplexer.Connect(options);
-            RedisDB = Redis.GetDatabase(0);
-        }
-
-        private ConnectionMultiplexer Redis;
-
-        private IDatabase RedisDB;
-
-        protected override void OnTest()
-        {
-            base.OnTest();
-            RunTest();
-        }
-
-        private void RunTest()
-        {
-            while (true)
-            {
-                for (int i = 10248; i <= 11077; i++)
-                {
-                    var data = RedisDB.StringGet(i.ToString());
-                    var item = Newtonsoft.Json.JsonConvert.DeserializeObject<Northwind.Data.Order>(data);
-                    if (!this.Increment())
-                    {
-                        return;
-                    }
-                }
-            }
-        }
-    }
-
-    public class StackExchange_Sync_MGET : TestBase
-    {
-        public StackExchange_Sync_MGET()
-        {
-            ConfigurationOptions options = ConfigurationOptions.Parse(Program.Host);
-            options.AsyncTimeout = 20 * 1000;
-            options.SyncTimeout = 20 * 1000;
-            Redis = ConnectionMultiplexer.Connect(options);
-            RedisDB = Redis.GetDatabase(0);
-        }
-
-        private ConnectionMultiplexer Redis;
-
-        private IDatabase RedisDB;
-
-        protected override void OnTest()
-        {
-            base.OnTest();
-            RunTest();
-        }
-
-        private void RunTest()
-        {
-            while (true)
-            {
-                for (int i = 10248; i <= 11077; i++)
-                {
-                    var values = RedisDB.StringGet(new RedisKey[] { i.ToString(), (i + 1).ToString() });
-                    object item1, item2;
-                    if (!values[0].IsNullOrEmpty)
-                        item1 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[0], typeof(Northwind.Data.Order));
-                    if (!values[1].IsNullOrEmpty)
-                        item2 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[1], typeof(Northwind.Data.Order));
-                    if (!this.Increment())
-                    {
-                        return;
-                    }
-                }
-            }
+            var i = OrderHelper.GetOrderID();
+            var values = RedisDB.StringGet(new RedisKey[] { i.ToString(), (i + 1).ToString() });
+            object item1, item2;
+            if (!values[0].IsNullOrEmpty)
+                item1 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[0], typeof(Northwind.Data.Order));
+            if (!values[1].IsNullOrEmpty)
+                item2 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[1], typeof(Northwind.Data.Order));
+            return base.Execute();
         }
     }
 

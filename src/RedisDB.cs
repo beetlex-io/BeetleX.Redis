@@ -68,17 +68,31 @@ namespace BeetleX.Redis
             return result;
         }
 
-        RedisHost IHostHandler.AddWriteHost(string host, int port = 6379)
+        RedisHost IHostHandler.AddWriteHost(string host, int port=6379)
         {
-            RedisHost redisHost = new RedisHost(DB, host, port);
+            return ((IHostHandler)this).AddWriteHost(host, port, false);
+        }
+
+        RedisHost IHostHandler.AddReadHost(string host, int port= 6379)
+        {
+            return ((IHostHandler)this).AddReadHost(host, port, false);
+        }
+
+        RedisHost IHostHandler.AddWriteHost(string host, int port, bool ssl)
+        {
+            if (port == 0)
+                port = 6379;
+            RedisHost redisHost = new RedisHost(ssl, DB, host, port);
             mWriteHosts.Add(redisHost);
             mWriteActives = mWriteHosts.ToArray();
             return redisHost;
         }
 
-        RedisHost IHostHandler.AddReadHost(string host, int port = 6379)
+        RedisHost IHostHandler.AddReadHost(string host, int port, bool ssl)
         {
-            RedisHost redisHost = new RedisHost(DB, host, port);
+            if (port == 0)
+                port = 6379;
+            RedisHost redisHost = new RedisHost(ssl, DB, host, port);
             mReadHosts.Add(redisHost);
             mReadActives = mReadHosts.ToArray();
             return redisHost;
@@ -561,5 +575,7 @@ namespace BeetleX.Redis
                 throw new RedisException(result.Messge);
             return (long)result.Value;
         }
+
+
     }
 }

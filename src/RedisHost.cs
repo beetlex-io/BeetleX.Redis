@@ -6,14 +6,15 @@ namespace BeetleX.Redis
 {
     public class RedisHost : IDisposable
     {
-        public RedisHost(int db, string host, int port = 6379)
+        public RedisHost(bool ssl, int db, string host, int port = 6379)
         {
+            SSL = ssl;
             Host = host;
             Port = port;
             DB = db;
             Available = true;
             Master = true;
-            mPingClient = new RedisClient(Host, Port);
+            mPingClient = new RedisClient(SSL, Host, Port);
         }
 
         private RedisClient mPingClient;
@@ -41,6 +42,8 @@ namespace BeetleX.Redis
 
         public bool Master { get; set; }
 
+        public bool SSL { get; set; } = false;
+
         public Task<RedisClient> Pop()
         {
             lock (mPool)
@@ -51,7 +54,7 @@ namespace BeetleX.Redis
                     mCount++;
                     if (mCount <= MaxConnections)
                     {
-                        client = new RedisClient(Host, Port);
+                        client = new RedisClient(SSL, Host, Port);
                         result.SetResult(client);
                     }
                     else
@@ -76,7 +79,7 @@ namespace BeetleX.Redis
 
         public RedisClient Create()
         {
-            var client = new RedisClient(Host, Port);
+            var client = new RedisClient(SSL, Host, Port);
             var result = Connect(client);
             if (result.IsError)
             {
@@ -92,7 +95,8 @@ namespace BeetleX.Redis
         {
             if (!client.TcpClient.IsConnected)
             {
-                if (client.TcpClient.Connect())
+                bool isNew;
+                if (client.TcpClient.Connect(out isNew))
                 {
                     this.Available = true;
                     if (!string.IsNullOrEmpty(Password))

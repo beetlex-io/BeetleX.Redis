@@ -314,8 +314,8 @@ namespace BeetleX.Redis
                 Result.Messge = message;
                 Host?.Push(Client);
                 Completed?.Invoke(this);
-                TaskCompletion();
-                //ResultDispatch.DispatchCenter.Enqueue(this, 3);
+                //TaskCompletion();
+                ResultDispatch.DispatchCenter.Enqueue(this, 3);
 
             }
 

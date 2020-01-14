@@ -10,9 +10,20 @@ namespace BeetleX.Redis
 {
     public class RedisClient
     {
-        public RedisClient(string host, int port = 6379)
+        public RedisClient(bool ssl, string host, int port = 6379)
         {
-            TcpClient = BeetleX.SocketFactory.CreateClient<AsyncTcpClient>(host, port);
+            if (ssl)
+            {
+                TcpClient = BeetleX.SocketFactory.CreateSslClient<AsyncTcpClient>(host, port, "beetlex");
+                TcpClient.CertificateValidationCallback = (o, e, f, d) =>
+                {
+                    return true;
+                };
+            }
+            else
+            {
+                TcpClient = BeetleX.SocketFactory.CreateClient<AsyncTcpClient>(host, port);
+            }
         }
 
         public AsyncTcpClient TcpClient { get; private set; }
@@ -137,7 +148,7 @@ namespace BeetleX.Redis
             MessagePackSerializer.Serialize(data.GetType(), Memory, data);
             return GetBuffer();
         }
-            
+
 
 
 
