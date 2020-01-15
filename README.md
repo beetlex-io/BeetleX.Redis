@@ -108,8 +108,19 @@ Redis.Default.Host.AddWriteHost("localhost");
 //ssl
 Redis.Default.Host.AddWriteHost("localhost",6378,true);
 //password 
-Redis.Default.Host.AddWriteHost("localhost")..Password="123456"
+Redis.Default.Host.AddWriteHost("localhost").Password="123456"
 ```
+## Create db
+``` csharp
+RedisDB DB = new RedisDB(1);
+DB.DataFormater = new JsonFormater();
+DB.Host.AddWriteHost("localhost");
+  //SSL
+DB.Host.AddWriteHost("localhost",6378,true);
+  //password 
+DB.Host.AddWriteHost("localhost").Password="123456"
+```
+
 ## SET/SET
 ``` csharp
 await Redis.Get<Employee>("nonexisting");
