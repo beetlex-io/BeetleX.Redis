@@ -1,17 +1,114 @@
 # BeetleX.Redis
 A high-performance async/non-blocking  redis client components for dotnet core,default support json and protobuf data format
 ,support ssl
+## Support commands
+`AUTH`
+`BLPOP`
+`BRPOP`
+`BRPOPLPUSH`
+`DECR`
+`DECRBY`
+`DEL`
+`DUMP`
+`EXISTS`
+`EXPIRE`
+`EXPIREAT`
+`FLUSHALL`
+`GET`
+`GETBIT`
+`GETRANGE`
+`GETSET`
+`HDEL`
+`HEXISTS`
+`HGET`
+`HGETALL`
+`HINCRBY`
+`HINCRBYFLOAT`
+`HKEYS`
+`HLEN`
+`HMGET`
+`HMSET`
+`HSET`
+`HSETNX`
+`HSTRLEN`
+`HVALS`
+`INCR`
+`INCRBY`
+`INCRBYFLOAT`
+`KEYS`
+`LINDEX`
+`LINSERT`
+`LLEN`
+`LPOP`
+`LPUSH`
+`LPUSHX`
+`LRANGE`
+`LREM`
+`LSET`
+`LTRIM`
+`MGET`
+`MOVE`
+`MSET`
+`MSETNX`
+`OBJECT`
+`PERSIST`
+`PEXPIRE`
+`PEXPIREAT`
+`PING`
+`PSETEX`
+`PTTL`
+`PUBLISH`
+`RANDOMKEY`
+`RENAME`
+`RENAMENX`
+`RPOP`
+`RPOPLPUSH`
+`RPUSH`
+`RPUSHX`
+`SELECT`
+`SET`
+`SETBIT`
+`SETEX`
+`SETNX`
+`SETRANGE`
+`STRLEN`
+`SUBSCRIBE`
+`TOUCH`
+`TTL`
+`TYPE`
+`UNLINK`
+`UNSUBSCRIBE`
+`WAIT`
+`ZADD`
+`ZCARD`
+`ZCOUNT`
+`ZINCRBY`
+`ZINTERSTORE`
+`ZLEXCOUNT`
+`ZRANGE`
+`ZRANGEBYLEX`
+`ZRANGEBYSCORE`
+`ZRANK`
+`ZREM`
+`ZREMRANGEBYLEX`
+`ZREMRANGEBYRANK`
+`ZREMRANGEBYSCORE`
+`ZREVRANGE`
+`ZREVRANGEBYSCORE`
+`ZREVRANK`
+`ZSCORE`
+`ZUNIONSTORE`
 ## nuget
 https://www.nuget.org/packages/BeetleX.Redis/
 
 ## Setting
 ``` csharp
-  Redis.Default.DataFormater = new JsonFormater();
-  Redis.Default.Host.AddWriteHost("localhost");
-  //ssl
-  Redis.Default.Host.AddWriteHost("localhost",6378,true);
-  //password 
-  Redis.Default.Host.AddWriteHost("localhost")..Password="123456"
+Redis.Default.DataFormater = new JsonFormater();
+Redis.Default.Host.AddWriteHost("localhost");
+//ssl
+Redis.Default.Host.AddWriteHost("localhost",6378,true);
+//password 
+Redis.Default.Host.AddWriteHost("localhost")..Password="123456"
 ```
 ## SET/SET
 ``` csharp
@@ -30,6 +127,13 @@ var list = Redis.CreateList<Employee>("employees");
 await list.Push(GetEmployee(1));
 await list.Insert(true, GetEmployee(2), GetEmployee(3));
 await list.Range(0, -1);
+```
+
+## Sequence
+``` csharp
+var sequeue = DB.CreateSequence("seq2");
+await sequeue.ZAdd((100, "A1"), (200, "A2"), (300, "A3"), (400, "A4"));
+var items = await sequeue.ZRange(0, -1, true);
 ```
 ## Hash
 ``` csharp
@@ -135,7 +239,43 @@ await list.RPush(GetEmployee(1), GetEmployee(2));
 await list.RPushX(GetEmployee(2));
 await list.Range(-3, 2);
 ```
+## Sequence
+``` csharp
+await DB.Del("seq2");
+var sequeue = DB.CreateSequence("seq2");
+await sequeue.ZAdd((100, "A1"), (200, "A2"), (300, "A3"), (400, "A4"));
+var items = await sequeue.ZRange(0, -1, true);
+Assert.Equal<int>(items.Count, 4);
+Assert.Equal<string>(items[0].Member, "A1");
+Assert.Equal<string>(items[1].Member, "A2");
+Assert.Equal<string>(items[2].Member, "A3");
+Assert.Equal<string>(items[3].Member, "A4");
 
+Assert.Equal<double>(items[0].Score, 100);
+Assert.Equal<double>(items[1].Score, 200);
+Assert.Equal<double>(items[2].Score, 300);
+Assert.Equal<double>(items[3].Score, 400);
+//--------------------------------------------------------------------
+await DB.Del("seq2");
+var sequeue = DB.CreateSequence("seq2");
+await sequeue.ZAdd((100, "A1"), (200, "A2"), (300, "A3"), (400, "A4"));
+var value = await sequeue.ZRevRank("A4");
+Assert.Equal<long>(value, 0);
+
+//------------------------------------------------------------------------
+await DB.Del("seq2","seq3","seq4");
+var seq2 = DB.CreateSequence("seq2");
+await seq2.ZAdd((100, "A1"), (200, "A2"), (300, "A3"), (400, "A4"));
+
+var seq3 = DB.CreateSequence("seq2");
+await seq3.ZAdd((500, "B1"), (600, "B2"), (700, "B3"), (800, "B4"));
+
+var seq4 = DB.CreateSequence("seq4");
+await seq4.ZUnionsStore("seq2", "seq3");
+
+var count = await seq4.ZCard();
+Assert.Equal<long>(count, 8);
+```
 ## HashTable
 create HashTable
 ``` csharp
