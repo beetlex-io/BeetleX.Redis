@@ -19,7 +19,7 @@ namespace BeetleX.Redis
 
         private int mDisposed = 0;
 
-        private ConcurrentDictionary<string, Type> mChannels = new ConcurrentDictionary<string, Type>();
+        private ConcurrentDictionary<string, ChannelRegister> mChannels = new ConcurrentDictionary<string, ChannelRegister>();
 
         private RedisClient redisClient;
 
@@ -27,21 +27,21 @@ namespace BeetleX.Redis
 
         private Commands.SUBSCRIBE mCommand;
 
-        public Subscriber Register<T>(string channel)
+        public Subscriber Register<T>(string channel, Action<T> action)
         {
-            Register(channel, typeof(T));
+            Register(channel, typeof(T), action);
             return this;
         }
 
-        public Subscriber Register(string channel, Type msgType = null)
+        protected Subscriber Register(string channel, Type msgType, Delegate action)
         {
-            mChannels[channel] = msgType;
+            mChannels[channel] = new ChannelRegister { MessageType = msgType, Action = action };
             return this;
         }
 
         public void UnRegister(string channel)
         {
-            if (mChannels.TryRemove(channel, out Type type))
+            if (mChannels.TryRemove(channel, out ChannelRegister type))
             {
                 Commands.UNSUBSCRIBE cmd = new Commands.UNSUBSCRIBE(channel);
                 subscribeRequest?.SendCommmand(cmd);
@@ -104,7 +104,30 @@ namespace BeetleX.Redis
                 }
                 subscribeMessage.Channel = (string)items[i + 1].Data;
                 subscribeMessage.Data = items[i + 2].Data;
-                OnReceive(subscribeMessage);
+                if (subscribeMessage.Type == SubscribeMessageType.Message)
+                {
+                    if (mChannels.TryGetValue(subscribeMessage.Channel, out ChannelRegister register))
+                    {
+                        try
+                        {
+                            register.Action.DynamicInvoke(subscribeMessage.Data);
+                        }
+                        catch (Exception e_)
+                        {
+                            subscribeMessage.Type = SubscribeMessageType.Error;
+                            subscribeMessage.Data = $"invoke {subscribeMessage.Channel} error {e_.Message}";
+                            OnReceive(subscribeMessage);
+                        }
+                    }
+                    else
+                    {
+                        OnReceive(subscribeMessage);
+                    }
+                }
+                else
+                {
+                    OnReceive(subscribeMessage);
+                }
             }
         }
 
@@ -121,8 +144,8 @@ namespace BeetleX.Redis
             else
             {
                 string channel = (string)r.Data[r.ArrayReadCount - 1].Data;
-                mChannels.TryGetValue(channel, out Type type);
-                if (type == null || mDB.DataFormater == null)
+                mChannels.TryGetValue(channel, out ChannelRegister register);
+                if (register.MessageType == null || mDB.DataFormater == null)
                 {
                     var item = new ResultItem { Type = ResultType.String, Data = stream.ReadString(r.BodyLength.Value) };
                     r.Data.Add(item);
@@ -131,7 +154,7 @@ namespace BeetleX.Redis
                 {
                     try
                     {
-                        var item = new ResultItem { Type = ResultType.Object, Data = mDB.DataFormater.DeserializeObject(type, c, stream, r.BodyLength.Value) };
+                        var item = new ResultItem { Type = ResultType.Object, Data = mDB.DataFormater.DeserializeObject(register.MessageType, c, stream, r.BodyLength.Value) };
                         r.Data.Add(item);
                     }
                     catch (Exception e_)
@@ -216,6 +239,13 @@ namespace BeetleX.Redis
                 subscribeRequest?.SendCommmand(cmd);
             }
         }
+
+        class ChannelRegister
+        {
+            public Type MessageType { get; set; }
+            public Delegate Action { get; set; }
+        }
+
     }
 
     public class SubscribeMessage : System.EventArgs

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Collections.Concurrent;
 namespace BeetleX.Redis
 {
     public abstract class Command
@@ -52,17 +52,17 @@ namespace BeetleX.Redis
 
         public abstract string Name { get; }
 
-        private byte[] mCommandBuffer = null;
-
         private List<CommandParameter> mParameters = new List<CommandParameter>();
 
-        protected Command AddText(object text)
+        private ConcurrentDictionary<string, byte[]> mCommandBuffers = new ConcurrentDictionary<string, byte[]>();
+
+        public Command AddText(object text)
         {
             mParameters.Add(new CommandParameter { Value = text });
             return this;
         }
 
-        protected Command AddData(object data)
+        public Command AddData(object data)
         {
             mParameters.Add(new CommandParameter { Value = data, DataFormater = this.DataFormater, Serialize = true });
             return this;
@@ -70,13 +70,13 @@ namespace BeetleX.Redis
 
         public virtual void OnExecute()
         {
-            if (mCommandBuffer == null)
+            if (!mCommandBuffers.TryGetValue(Name, out byte[] cmdBuffer))
             {
                 string value = $"${Name.Length}\r\n{Name}";
-                mCommandBuffer = Encoding.ASCII.GetBytes(value);
+                cmdBuffer = Encoding.ASCII.GetBytes(value);
+                mCommandBuffers[Name] = cmdBuffer;
             }
-
-            mParameters.Add(new CommandParameter { ValueBuffer = mCommandBuffer });
+            mParameters.Add(new CommandParameter { ValueBuffer = cmdBuffer });
         }
 
         public void Execute(RedisClient client, PipeStream stream)

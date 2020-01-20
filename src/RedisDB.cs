@@ -557,6 +557,11 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
+        public Sequence CreateSequence(string key)
+        {
+            return new Sequence(this, key);
+        }
+
         public RedisHashTable CreateHashTable(string key)
         {
             return new RedisHashTable(this, key, DataFormater);

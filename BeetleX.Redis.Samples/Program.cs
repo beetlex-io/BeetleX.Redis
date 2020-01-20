@@ -10,11 +10,9 @@ namespace BeetleX.Redis.Samples
             Redis.Default.DataFormater = new JsonFormater();
             Redis.Default.Host.AddWriteHost("192.168.2.19");
             var subscribe = Redis.Subscribe();
-            subscribe.Register<Employee>("employees");
-            subscribe.Receive = (o, e) =>
-            {
-                Console.WriteLine($"{e.Type} {e.Channel} {e.Data}");
-            };
+            subscribe.Register<Employee>("employees",e=> {
+                Console.WriteLine($"Receive employee {e.FirstName} {e.LastName}");
+            });
             subscribe.Listen();
             System.Threading.Thread.Sleep(1000);
             Test();
