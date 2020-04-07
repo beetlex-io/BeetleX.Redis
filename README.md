@@ -65,6 +65,7 @@ A high-performance async/non-blocking  redis client components for dotnet core,d
 [RPOPLPUSH](https://redis.io/commands/RPOPLPUSH)|
 [RPUSH](https://redis.io/commands/RPUSH)|
 [RPUSHX](https://redis.io/commands/RPUSHX)|
+[SCAN](https://redis.io/commands/SCAN)|
 [SELECT](https://redis.io/commands/SELECT)|
 [SET](https://redis.io/commands/SET)|
 [SETBIT](https://redis.io/commands/SETBIT)|
