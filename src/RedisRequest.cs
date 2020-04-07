@@ -53,59 +53,71 @@ namespace BeetleX.Redis
 
         private void OnReceive(IClient c, ClientReceiveArgs reader)
         {
-            ResultType resultType;
-            string msg;
-            PipeStream pipeStream = reader.Stream.ToPipeStream();
-            if (mFreeLength > 0)
+            if (Command.NetworkReceive != null)
             {
-                pipeStream.ReadFree(mFreeLength);
-                mFreeLength = 0;
-            }
-            if (Result.Status == ResultStatus.None)
-            {
-                if (pipeStream.TryReadLine(out string line))
+                var result = Command.NetworkReceive(this, reader.Stream.ToPipeStream());
+                if(result !=null)
                 {
-                    char type = line[0];
-                    switch (type)
+                    Result = result;
+                    OnCompleted(ResultType.Object, null);
+                }
+            }
+            else
+            {
+                ResultType resultType;
+                string msg;
+                PipeStream pipeStream = reader.Stream.ToPipeStream();
+                if (mFreeLength > 0)
+                {
+                    pipeStream.ReadFree(mFreeLength);
+                    mFreeLength = 0;
+                }
+                if (Result.Status == ResultStatus.None)
+                {
+                    if (pipeStream.TryReadLine(out string line))
                     {
-                        case '+':
-                            resultType = ResultType.Simple;
-                            msg = line.Substring(1, line.Length - 1);
-                            OnCompleted(resultType, msg);
-                            return;
-                        case '-':
-                            resultType = ResultType.Error;
-                            msg = line.Substring(1, line.Length - 1);
-                            OnCompleted(resultType, msg);
-                            return;
-                        case ':':
-                            Result.Data.Add(new ResultItem { Type = ResultType.Integers, Data = long.Parse(line.Substring(1, line.Length - 1)) });
-                            Result.Status = ResultStatus.Completed;
-                            OnCompleted(ResultType.Integers, null);
-                            return;
-                        case '$':
-                            Result.ResultType = ResultType.Bulck;
-                            Result.ArrayCount = 1;
-                            Result.BodyLength = int.Parse(line.Substring(1, line.Length - 1));
-                            Result.Status = ResultStatus.Loading;
-                            break;
-                        case '*':
-                            Result.ResultType = ResultType.Arrays;
-                            Result.ArrayCount = int.Parse(line.Substring(1, line.Length - 1));
-                            Result.Status = ResultStatus.Loading;
-                            break;
+                        char type = line[0];
+                        switch (type)
+                        {
+                            case '+':
+                                resultType = ResultType.Simple;
+                                msg = line.Substring(1, line.Length - 1);
+                                OnCompleted(resultType, msg);
+                                return;
+                            case '-':
+                                resultType = ResultType.Error;
+                                msg = line.Substring(1, line.Length - 1);
+                                OnCompleted(resultType, msg);
+                                return;
+                            case ':':
+                                Result.Data.Add(new ResultItem { Type = ResultType.Integers, Data = long.Parse(line.Substring(1, line.Length - 1)) });
+                                Result.Status = ResultStatus.Completed;
+                                OnCompleted(ResultType.Integers, null);
+                                return;
+                            case '$':
+                                Result.ResultType = ResultType.Bulck;
+                                Result.ArrayCount = 1;
+                                Result.BodyLength = int.Parse(line.Substring(1, line.Length - 1));
+                                Result.Status = ResultStatus.Loading;
+                                break;
+                            case '*':
+                                Result.ResultType = ResultType.Arrays;
+                                Result.ArrayCount = int.Parse(line.Substring(1, line.Length - 1));
+                                Result.Status = ResultStatus.Loading;
+                                break;
+                        }
                     }
                 }
-            }
-            if (Result.Status == ResultStatus.Loading)
-            {
-                if (Result.ResultType == ResultType.Arrays)
+                if (Result.Status == ResultStatus.Loading)
                 {
-                    LoadArray(pipeStream);
-                }
-                else if (Result.ResultType == ResultType.Bulck)
-                {
-                    LoadBulck(pipeStream);
+                    if (Result.ResultType == ResultType.Arrays)
+                    {
+                        LoadArray(pipeStream);
+                    }
+                    else if (Result.ResultType == ResultType.Bulck)
+                    {
+                        LoadBulck(pipeStream);
+                    }
                 }
             }
         }

@@ -46,6 +46,8 @@ namespace BeetleX.Redis
 
         public Func<Result, PipeStream, RedisClient, bool> Reader { get; set; }
 
+        public Func<RedisRequest, PipeStream,Result> NetworkReceive { get; set; }
+
         public abstract bool Read { get; }
 
         public IDataFormater DataFormater { get; set; }

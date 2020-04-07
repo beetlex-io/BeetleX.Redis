@@ -29,18 +29,22 @@ namespace BeetleX.Redis
 
         internal static RedisDB Default => mDefault;
 
+        public bool AutoPing { get; set; } = true;
+
         public IHostHandler Host { get; set; }
 
         private void OnDetection(object state)
         {
             mDetectionTime.Change(-1, -1);
-
-            var wHosts = mWriteActives;
-            foreach (var item in wHosts)
-                item.Ping();
-            var rHost = mReadActives;
-            foreach (var item in rHost)
-                item.Ping();
+            if (AutoPing)
+            {
+                var wHosts = mWriteActives;
+                foreach (var item in wHosts)
+                    item.Ping();
+                var rHost = mReadActives;
+                foreach (var item in rHost)
+                    item.Ping();
+            }
             mDetectionTime.Change(1000, 1000);
 
         }
@@ -68,12 +72,12 @@ namespace BeetleX.Redis
             return result;
         }
 
-        RedisHost IHostHandler.AddWriteHost(string host, int port=6379)
+        RedisHost IHostHandler.AddWriteHost(string host, int port = 6379)
         {
             return ((IHostHandler)this).AddWriteHost(host, port, false);
         }
 
-        RedisHost IHostHandler.AddReadHost(string host, int port= 6379)
+        RedisHost IHostHandler.AddReadHost(string host, int port = 6379)
         {
             return ((IHostHandler)this).AddReadHost(host, port, false);
         }
@@ -298,7 +302,18 @@ namespace BeetleX.Redis
                 throw new RedisException(result.Messge);
             return (from a in result.Data select (string)a.Data).ToArray();
         }
-
+        public async ValueTask<Commands.ScanResult> Scan(int cursor, int count = 20, string pattern = null)
+        {
+            List<string> items = new List<string>();
+            Commands.SCAN cmd = new Commands.SCAN();
+            cmd.Cursor = cursor;
+            cmd.Count = count;
+            cmd.Pattern = pattern;
+            var result = await Execute(cmd, typeof(string));
+            if (result.IsError)
+                throw new RedisException(result.Messge);
+            return (Commands.ScanResult)result.Value;
+        }
         public async ValueTask<long> Move(string key, int db)
         {
             Commands.MOVE cmd = new Commands.MOVE(key, db);
@@ -547,6 +562,8 @@ namespace BeetleX.Redis
                 throw new RedisException(result.Messge);
             return (long)result.Value;
         }
+
+
 
         public async ValueTask<long> Strlen(string key)
         {
