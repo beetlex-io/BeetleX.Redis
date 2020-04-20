@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BeetleX.Buffers;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -24,4 +25,19 @@ namespace BeetleX.Redis.Commands
             AddText(Key);
         }
     }
+
+    public class GetBytes : GET
+    {
+        public GetBytes(string key) : base(key, null)
+        {
+            this.NetworkReceive = OnReceive;
+        }
+
+        protected Result OnReceive(RedisRequest request, PipeStream pipeStream)
+        {
+            Result result = null;
+            return result;
+        }
+    }
+
 }

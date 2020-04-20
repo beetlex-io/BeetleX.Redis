@@ -184,6 +184,7 @@ namespace BeetleX.Redis
             return await Set(key, value, null, null);
         }
 
+
         public async ValueTask<string> Set(string key, object value, int? seconds)
         {
             return await Set(key, value, seconds, null);
@@ -598,6 +599,31 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
+        public async ValueTask<long> PFCount(params string[] keys)
+        {
+            Commands.PFCount cmd = new Commands.PFCount(keys);
+            var result = await Execute(cmd, typeof(string));
+            if (result.IsError)
+                throw new RedisException(result.Messge);
+            return (long)result.Value;
+        }
+
+        public async ValueTask<long> PFAdd(string key,params string[] items)
+        {
+            Commands.PFAdd cmd = new Commands.PFAdd(key, items);
+            var result = await Execute(cmd, typeof(string));
+            if (result.IsError)
+                throw new RedisException(result.Messge);
+            return (long)result.Value;
+        }
+
+        public async Task PFMerge(string key,params string[] items)
+        {
+            Commands.PFMerge cmd = new Commands.PFMerge(key, items);
+            var result = await Execute(cmd, typeof(string));
+            if (result.IsError)
+                throw new RedisException(result.Messge);
+        }
 
     }
 }

@@ -50,6 +50,4 @@ namespace BeetleX.Redis.Commands
             }
         }
     }
-
-
 }

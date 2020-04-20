@@ -46,7 +46,7 @@ namespace BeetleX.Redis
 
         public Func<Result, PipeStream, RedisClient, bool> Reader { get; set; }
 
-        public Func<RedisRequest, PipeStream,Result> NetworkReceive { get; set; }
+        public Func<RedisRequest, PipeStream, Result> NetworkReceive { get; set; }
 
         public abstract bool Read { get; }
 
@@ -66,7 +66,14 @@ namespace BeetleX.Redis
 
         public Command AddData(object data)
         {
-            mParameters.Add(new CommandParameter { Value = data, DataFormater = this.DataFormater, Serialize = true });
+            if (data is ArraySegment<byte> buffer)
+            {
+                mParameters.Add(new CommandParameter { DataBuffer = buffer });
+            }
+            else
+            {
+                mParameters.Add(new CommandParameter { Value = data, DataFormater = this.DataFormater, Serialize = true });
+            }
             return this;
         }
 
@@ -108,6 +115,8 @@ namespace BeetleX.Redis
 
             internal byte[] ValueBuffer { get; set; }
 
+            public ArraySegment<byte> DataBuffer { get; set; }
+
             public bool Serialize
             {
                 get; set;
@@ -125,6 +134,19 @@ namespace BeetleX.Redis
                 else if (Serialize && DataFormater != null)
                 {
                     DataFormater.SerializeObject(Value, client, stream);
+                }
+                else if (DataBuffer != null)
+                {
+                    var data = GetBodyHeaderLenData(DataBuffer.Count);
+                    if (data != null)
+                    {
+                        stream.Write(data, 0, data.Length);
+                    }
+                    else
+                    {
+                        stream.Write($"${DataBuffer.Count}\r\n");
+                    }
+                    stream.Write(DataBuffer.Array, DataBuffer.Offset, DataBuffer.Count);
                 }
                 else
                 {

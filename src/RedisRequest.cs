@@ -144,14 +144,35 @@ namespace BeetleX.Redis
                 {
                     try
                     {
-                        object value;
+                        object value=null;
                         if (Command.DataFormater == null)
                         {
-                            value = pipeStream.ReadString(Result.BodyLength.Value);
+                            if (Types.Length == 1 && Types[0] == typeof(ArraySegment<byte>))
+                            {
+                                var len = Result.BodyLength.Value;
+                                var buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(len);
+                                pipeStream.Read(buffer, 0, len);
+                                value = new ArraySegment<byte>(buffer, 0, len);
+                            }
+                            else
+                            {
+                                value = pipeStream.ReadString(Result.BodyLength.Value);
+                            }
                         }
                         else
                         {
-                            value = Command.DataFormater.DeserializeObject(Types[Result.Data.Count % Types.Length], Client, pipeStream, Result.BodyLength.Value);
+                            var type = Types[Result.Data.Count % Types.Length];
+                            if (type == typeof(ArraySegment<byte>))
+                            {
+                                var len = Result.BodyLength.Value;
+                                var buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(len);
+                                pipeStream.Read(buffer, 0, len);
+                                value = new ArraySegment<byte>(buffer, 0, len);
+                            }
+                            else
+                            {
+                                value = Command.DataFormater.DeserializeObject(type, Client, pipeStream, Result.BodyLength.Value);
+                            }
                         }
                         Result.Data.Add(new ResultItem { Type = ResultType.Object, Data = value });
                         pipeStream.ReadFree(2);
