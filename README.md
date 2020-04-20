@@ -99,7 +99,9 @@ A high-performance async/non-blocking  redis client components for dotnet core,d
 [ZREVRANK](https://redis.io/commands/ZREVRANK)|
 [ZSCORE](https://redis.io/commands/ZSCORE)|
 [ZUNIONSTORE](https://redis.io/commands/ZUNIONSTORE)|
-|
+[PFCount](https://redis.io/commands/PFCount)|
+[PFAdd](https://redis.io/commands/PFAdd)|
+[PFMerge](https://redis.io/commands/PFMerge)|
 ## nuget
 https://www.nuget.org/packages/BeetleX.Redis/
 
