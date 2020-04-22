@@ -16,13 +16,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-<<<<<<< .merge_file_a04232
     <PackageReference Include="BeetleX" Version="1.5.1.6" />
-    <PackageReference Include="MessagePack" Version="2.0.323" />
-=======
-    <PackageReference Include="BeetleX" Version="1.5.1.1" />
     <PackageReference Include="MessagePack" Version="2.1.90" />
->>>>>>> .merge_file_a15748
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="protobuf-net" Version="2.4.0" />
     <PackageReference Include="SpanJson" Version="2.0.7" />
