@@ -102,6 +102,7 @@ A high-performance async/non-blocking  redis client components for dotnet core,d
 [PFCount](https://redis.io/commands/PFCount)|
 [PFAdd](https://redis.io/commands/PFAdd)|
 [PFMerge](https://redis.io/commands/PFMerge)|
+[INFO](https://redis.io/commands/INFO)|
 ## nuget
 https://www.nuget.org/packages/BeetleX.Redis/
 
