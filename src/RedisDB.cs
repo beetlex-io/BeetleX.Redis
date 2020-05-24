@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BeetleX.Redis.Commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -623,6 +624,17 @@ namespace BeetleX.Redis
             var result = await Execute(cmd, typeof(string));
             if (result.IsError)
                 throw new RedisException(result.Messge);
+        }
+
+        public async ValueTask<InfoResult> Info(InfoSection? section=null)
+        {
+            Commands.INFO cmd = new INFO();
+            cmd.Section = section;
+            var result = await Execute(cmd, typeof(string));
+            if (result.IsError)
+                throw new RedisException(result.Messge);
+            return (InfoResult)result.Value;
+
         }
 
     }
