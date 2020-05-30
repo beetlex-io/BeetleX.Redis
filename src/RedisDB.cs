@@ -67,6 +67,13 @@ namespace BeetleX.Redis
 
         public int DB { get; set; }
 
+        public RedisStream<T> CreateStream<T>(string name)
+        {
+            if (DataFormater == null)
+                throw new RedisException("RedisDB data formater property cannot be empty!");
+            return new RedisStream<T>(this, name);
+        }
+
         public RedisDB Cloneable(IDataFormater dataFormater = null)
         {
             var result = new RedisDB(this.DB, dataFormater, this);

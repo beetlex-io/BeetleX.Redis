@@ -22,6 +22,12 @@ namespace BeetleX.Redis
 
         internal int? BodyLength { get; set; }
 
+        public void Throw()
+        {
+            if (IsError)
+                throw new RedisException(Messge);
+        }
+
         public bool IsError
         {
             get
