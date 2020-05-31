@@ -2,7 +2,7 @@
 
   <PropertyGroup>    
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
-    <Version>0.9.7.3</Version>
+    <Version>0.9.7.4</Version>
     <Company>beetlex.io</Company>
     <Authors>henryfan</Authors>
     <Copyright>Copyright © beetlex.io 2019-2020</Copyright>

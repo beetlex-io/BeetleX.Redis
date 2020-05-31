@@ -104,8 +104,10 @@ namespace BeetleX.Redis.XUnitTest
         {
             RedisStream<Employee> stream = DB.GetStream<Employee>("employees_stream");
             var group = await stream.GetGroup("g1");
-            var items = await group.Read("henry", "0");
-            await group.Ack((from a in items select a.ID).ToArray());
+            var items = await group.Read("henry","0");
+            foreach (var item in items)
+                await item.Ack();
+            //await group.Ack((from a in items select a.ID).ToArray());
             items = await group.Read("henry","0");
             Write(items);
         }

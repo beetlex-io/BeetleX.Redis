@@ -12,6 +12,11 @@ namespace BeetleX.Redis
             DispatchCenter = new DispatchCenter<RedisRequest>(OnExecute);
         }
 
+        public static void SetThreads(int threads)
+        {
+            DispatchCenter = new DispatchCenter<RedisRequest>(OnExecute, threads);
+        }
+
         public static DispatchCenter<RedisRequest> DispatchCenter { get; set; }
 
         private static void OnExecute(RedisRequest request)
