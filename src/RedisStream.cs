@@ -19,10 +19,16 @@ namespace BeetleX.Redis
 
         public RedisDB DB => mDB;
 
-        public async ValueTask<string> Add(object data, string id = null)
+        public ValueTask<string> Add(object data, string id = null)
+        {
+            return Add(data, null, id);
+        }
+
+        public async ValueTask<string> Add(object data, int? maxlen, string id)
         {
             Commands.XADD cmd = new Commands.XADD(Name, id);
             cmd.DataFormater = mDB.DataFormater;
+            cmd.MAXLEN = maxlen;
             cmd.Data = data;
             var result = await mDB.Execute(cmd, typeof(string));
             result.Throw();
@@ -62,6 +68,7 @@ namespace BeetleX.Redis
             List<StreamDataItem<T>> items = new List<StreamDataItem<T>>();
             foreach (var item in result.Data)
             {
+                ((StreamDataItem<T>)item.Data).Stream = this;
                 items.Add((StreamDataItem<T>)item.Data);
             }
             return items;
@@ -84,10 +91,13 @@ namespace BeetleX.Redis
             List<StreamDataItem<T>> items = new List<StreamDataItem<T>>();
             foreach (var item in result.Data)
             {
+                ((StreamDataItem<T>)item.Data).Stream = this;
                 items.Add((StreamDataItem<T>)item.Data);
             }
             return items;
         }
+
+        
 
         public ValueTask<List<StreamDataItem<T>>> Read(int? block = null)
         {
@@ -108,12 +118,13 @@ namespace BeetleX.Redis
             List<StreamDataItem<T>> items = new List<StreamDataItem<T>>();
             foreach (var item in result.Data)
             {
+                ((StreamDataItem<T>)item.Data).Stream = this;
                 items.Add((StreamDataItem<T>)item.Data);
             }
             return items;
         }
 
-        public async ValueTask<RedisStreamGroup<T>> CreateGroup(string name, string start = null)
+        public async ValueTask<RedisStreamGroup<T>> GetGroup(string name, string start = null)
         {
             Commands.XGROUP_CREATE cmd = new Commands.XGROUP_CREATE(Name, name);
             if (!string.IsNullOrEmpty(start))
@@ -135,6 +146,6 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
-        
+
     }
 }

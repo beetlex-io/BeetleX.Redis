@@ -1,5 +1,6 @@
 ﻿using BeetleX.Buffers;
 using BeetleX.Clients;
+using BeetleX.Redis.Commands;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -53,10 +54,11 @@ namespace BeetleX.Redis
 
         private void OnReceive(IClient c, ClientReceiveArgs reader)
         {
+
             if (Command.NetworkReceive != null)
             {
                 var result = Command.NetworkReceive(this, reader.Stream.ToPipeStream());
-                if(result !=null)
+                if (result != null)
                 {
                     Result = result;
                     OnCompleted(ResultType.Object, null);
@@ -64,6 +66,7 @@ namespace BeetleX.Redis
             }
             else
             {
+
                 ResultType resultType;
                 string msg;
                 PipeStream pipeStream = reader.Stream.ToPipeStream();
@@ -144,7 +147,7 @@ namespace BeetleX.Redis
                 {
                     try
                     {
-                        object value=null;
+                        object value = null;
                         if (Command.DataFormater == null)
                         {
                             if (Types.Length == 1 && Types[0] == typeof(ArraySegment<byte>))
@@ -347,8 +350,15 @@ namespace BeetleX.Redis
                 Result.Messge = message;
                 Host?.Push(Client);
                 Completed?.Invoke(this);
-                //TaskCompletion();
-                ResultDispatch.DispatchCenter.Enqueue(this, 3);
+                // TaskCompletion();
+                if (Command.GetType() == typeof(SELECT) || Command.GetType() == typeof(AUTH))
+                {
+                    Task.Run(() => TaskCompletion());
+                }
+                else
+                {
+                    ResultDispatch.DispatchCenter.Enqueue(this, 3);
+                }
 
             }
 
@@ -356,7 +366,7 @@ namespace BeetleX.Redis
 
         internal void TaskCompletion()
         {
-            TaskCompletionSource.SetResult(Result);
+            TaskCompletionSource.TrySetResult(Result);
         }
     }
 
@@ -380,7 +390,7 @@ namespace BeetleX.Redis
             Result.Status = ResultStatus.Completed;
             Result.ResultType = type;
             Result.Messge = message;
-            TaskCompletionSource.SetResult(Result);
+            TaskCompletionSource.TrySetResult(Result);
         }
     }
 

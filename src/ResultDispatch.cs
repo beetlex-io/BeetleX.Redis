@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BeetleX.Redis
 {
-    class ResultDispatch
+    public class ResultDispatch
     {
         static ResultDispatch()
         {

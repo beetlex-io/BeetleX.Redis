@@ -18,6 +18,8 @@ namespace BeetleX.Redis.Commands
 
         private string mID;
 
+        public int? MAXLEN { get; set; }
+
         public object Data { get; set; }
 
         public override bool Read => false;
@@ -28,6 +30,11 @@ namespace BeetleX.Redis.Commands
         {
             base.OnExecute();
             AddText(mStreamName);
+            if (MAXLEN != null)
+            {
+                AddText("MAXLEN");
+                AddText(MAXLEN.Value);
+            }
             AddText(mID);
             AddText("data");
             AddData(Data);

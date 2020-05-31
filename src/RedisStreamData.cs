@@ -2,13 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BeetleX.Redis
 {
     class StreamDataReceive<T>
     {
 
+     
         private Result mResult = new Result();
 
         private StreamDataReader<T> mReader = new StreamDataReader<T>();
@@ -21,7 +24,7 @@ namespace BeetleX.Redis
                 {
                     foreach (var item in s.Items)
                     {
-                        item.Stream = s.Name;
+                        item.StreamName = s.Name;
                         mResult.Data.Add(new ResultItem { Type = ResultType.Object, Data = item });
                     }
                 }
@@ -74,8 +77,6 @@ namespace BeetleX.Redis
 
         private ReadStatus mStatus = ReadStatus.None;
 
-        private int mValueLength = 0;
-
         public bool Read(RedisRequest request, PipeStream stream)
         {
             string line;
@@ -83,7 +84,7 @@ namespace BeetleX.Redis
             {
                 if (stream.TryReadLine(out line))
                 {
-                    if(line[0]=='-')
+                    if (line[0] == '-')
                     {
                         throw new RedisException(line.Substring(1));
                     }
@@ -127,7 +128,6 @@ namespace BeetleX.Redis
                     mItem = null;
                     mName = null;
                     mStatus = ReadStatus.None;
-                    mValueLength = 0;
                     if (mCount != null && Items.Count >= mCount.Value)
                         return true;
                     goto ReRead;
@@ -208,6 +208,19 @@ namespace BeetleX.Redis
             {
                 if (stream.TryReadLine(out line))
                 {
+                    if (line == "*-1")
+                    {
+                        StreamDataItem<T> item = new StreamDataItem<T>();
+                        item.ID = mID;
+                        item.Data = default(T);
+                        Items.Add(item);
+                        if (mCount != null && Items.Count >= mCount.Value)
+                            return true;
+                        mID = null;
+                        mValueLength = null;
+                        mReadStatus = ItemReadStaus.None;
+                        goto ReRead;
+                    }
                     mReadStatus = ItemReadStaus.ReadBody;
                 }
             }
@@ -283,7 +296,28 @@ namespace BeetleX.Redis
 
         public T Data { get; internal set; }
 
-        public string Stream { get; set; }
+        public string StreamName { get; set; }
+
+        internal RedisStream<T> Stream { get; set; }
+
+        internal RedisStreamGroup<T> Group { get; set; }
+
+        public async ValueTask Delete()
+        {
+            if (Group != null)
+            {
+                await Group.Stream.Del(ID);
+                return;
+            }
+            if (Stream != null)
+                await Stream.Del(ID);
+        }
+
+        public async ValueTask Ack()
+        {
+            if (Group != null)
+                await Group.Ack(ID);
+        }
     }
 
 }

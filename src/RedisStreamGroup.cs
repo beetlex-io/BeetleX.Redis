@@ -19,6 +19,8 @@ namespace BeetleX.Redis
 
         public string Name { get; private set; }
 
+        private StreamDataReceive<T> mReceiver;
+
         public RedisStream<T> Stream { get; private set; }
 
         public async ValueTask<bool> SetID(string id)
@@ -29,6 +31,11 @@ namespace BeetleX.Redis
             return true;
         }
 
+        public async ValueTask<List<StreamDataItem<T>>> ReadWait(string consumer,int timeout=0)
+        {
+            return await Read(consumer, timeout, null, null);
+        }
+
         public ValueTask<List<StreamDataItem<T>>> Read(string consumer,string start = null)
         {
             return Read(consumer, null, null, start);
@@ -37,6 +44,7 @@ namespace BeetleX.Redis
         public async ValueTask<List<StreamDataItem<T>>> Read(string consumer, int? block, int? count, string start = null)
         {
             StreamDataReceive<T> receiver = new StreamDataReceive<T>();
+            mReceiver = receiver;
             Commands.XREADGROUP cmd = new Commands.XREADGROUP(Stream.Name, Name, consumer, start);
             cmd.NetworkReceive = receiver.Receive;
             cmd.DataFormater = Stream.DB.DataFormater;
@@ -47,6 +55,7 @@ namespace BeetleX.Redis
             List<StreamDataItem<T>> items = new List<StreamDataItem<T>>();
             foreach (var item in result.Data)
             {
+                ((StreamDataItem<T>)item.Data).Group = this;
                 items.Add((StreamDataItem<T>)item.Data);
             }
             return items;

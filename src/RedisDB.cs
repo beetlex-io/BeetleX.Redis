@@ -67,7 +67,7 @@ namespace BeetleX.Redis
 
         public int DB { get; set; }
 
-        public RedisStream<T> CreateStream<T>(string name)
+        public RedisStream<T> GetStream<T>(string name)
         {
             if (DataFormater == null)
                 throw new RedisException("RedisDB data formater property cannot be empty!");
@@ -616,7 +616,7 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
-        public async ValueTask<long> PFAdd(string key,params string[] items)
+        public async ValueTask<long> PFAdd(string key, params string[] items)
         {
             Commands.PFAdd cmd = new Commands.PFAdd(key, items);
             var result = await Execute(cmd, typeof(string));
@@ -625,7 +625,7 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
-        public async Task PFMerge(string key,params string[] items)
+        public async Task PFMerge(string key, params string[] items)
         {
             Commands.PFMerge cmd = new Commands.PFMerge(key, items);
             var result = await Execute(cmd, typeof(string));
@@ -633,7 +633,7 @@ namespace BeetleX.Redis
                 throw new RedisException(result.Messge);
         }
 
-        public async ValueTask<InfoResult> Info(InfoSection? section=null)
+        public async ValueTask<InfoResult> Info(InfoSection? section = null)
         {
             Commands.INFO cmd = new INFO();
             cmd.Section = section;
