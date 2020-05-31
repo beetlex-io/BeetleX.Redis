@@ -103,6 +103,15 @@ A high-performance async/non-blocking  redis client components for dotnet core,d
 [PFAdd](https://redis.io/commands/PFAdd)|
 [PFMerge](https://redis.io/commands/PFMerge)|
 [INFO](https://redis.io/commands/INFO)|
+[XACK](https://redis.io/commands/XACK)|
+[XADD](https://redis.io/commands/XADD)|
+[XDEL](https://redis.io/commands/XDEL)|
+[XGROUP](https://redis.io/commands/XGROUP)|
+[XLEN](https://redis.io/commands/XLEN)|
+[XRANGE](https://redis.io/commands/XRANGE)|
+[XREAD](https://redis.io/commands/XREAD)|
+[XREADGROUP](https://redis.io/commands/XREADGROUP)|
+[XREVRANGE](https://redis.io/commands/XREVRANGE)|
 ## nuget
 https://www.nuget.org/packages/BeetleX.Redis/
 
@@ -159,6 +168,31 @@ await table.Get<Employee, Employee>("field1", "field2");
 await table.Del("emp2");
 await table.Keys();
 ```
+## Stream
+``` csharp
+ RedisStream<Employee> stream = DB.GetStream<Employee>("employees_stream");
+ await stream.Add(DataHelper.Defalut.Employees[0]);
+ await stream.Len();
+ await stream.Range();
+ await stream.RevRange();
+ await stream.Read(0, null, "0-0");
+ var group = await stream.GetGroup("g1");
+ await group.Read("henry");
+ var items = await group.Read("henry","0");
+ foreach (var item in items)
+    await item.Ack();
+    
+ while (true)
+ {
+    items = await group.ReadWait(name);
+    foreach (var item in items)
+    {
+        Console.WriteLine($"1-{name}|{item.ID} {item.Data.FirstName}\t{item.Data.LastName}");
+    }
+ }
+```
+
+
 ## Subscribe
 ``` csharp
 var subscribe = Redis.Subscribe();
