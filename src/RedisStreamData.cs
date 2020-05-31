@@ -32,8 +32,6 @@ namespace BeetleX.Redis
         }
     }
 
-
-
     class StreamDataItemReceive<T>
     {
 
@@ -64,7 +62,6 @@ namespace BeetleX.Redis
 
     }
 
-
     class StreamDataReader<T>
     {
         public List<StreamData<T>> Items { get; set; } = new List<StreamData<T>>();
@@ -86,6 +83,10 @@ namespace BeetleX.Redis
             {
                 if (stream.TryReadLine(out line))
                 {
+                    if(line[0]=='-')
+                    {
+                        throw new RedisException(line.Substring(1));
+                    }
                     mCount = int.Parse(line.Substring(1));
                     if (mCount <= 0)
                         return true;
@@ -170,6 +171,10 @@ namespace BeetleX.Redis
             {
                 if (stream.TryReadLine(out line))
                 {
+                    if (line[0] == '-')
+                    {
+                        throw new RedisException(line.Substring(1));
+                    }
                     mCount = int.Parse(line.Substring(1));
                     if (mCount <= 0)
                         return true;

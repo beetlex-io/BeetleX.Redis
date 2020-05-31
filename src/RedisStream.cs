@@ -17,6 +17,8 @@ namespace BeetleX.Redis
 
         private RedisDB mDB;
 
+        public RedisDB DB => mDB;
+
         public async ValueTask<string> Add(object data, string id = null)
         {
             Commands.XADD cmd = new Commands.XADD(Name, id);
@@ -70,7 +72,6 @@ namespace BeetleX.Redis
             return RevRange(null, null, count);
         }
 
-
         public async ValueTask<List<StreamDataItem<T>>> RevRange(string start, string stop, int? count = null)
         {
             StreamDataItemReceive<T> receiver = new StreamDataItemReceive<T>();
@@ -111,5 +112,29 @@ namespace BeetleX.Redis
             }
             return items;
         }
+
+        public async ValueTask<RedisStreamGroup<T>> CreateGroup(string name, string start = null)
+        {
+            Commands.XGROUP_CREATE cmd = new Commands.XGROUP_CREATE(Name, name);
+            if (!string.IsNullOrEmpty(start))
+                cmd.Start = start;
+            var result = await mDB.Execute(cmd, typeof(T));
+            if (result.IsError)
+            {
+                if (result.Messge.IndexOf("name already exists", StringComparison.OrdinalIgnoreCase) == -1)
+                    result.Throw();
+            }
+            return new RedisStreamGroup<T>(this, name, start);
+        }
+
+        public async ValueTask<long> DestroyGroup(string name)
+        {
+            Commands.XGROUP_DESTROY cmd = new Commands.XGROUP_DESTROY(Name, name);
+            var result = await mDB.Execute(cmd, typeof(T));
+            result.Throw();
+            return (long)result.Value;
+        }
+
+        
     }
 }

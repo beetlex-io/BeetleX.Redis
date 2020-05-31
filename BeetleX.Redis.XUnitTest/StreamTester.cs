@@ -44,7 +44,7 @@ namespace BeetleX.Redis.XUnitTest
             id = await stream.Add(DataHelper.Defalut.Employees[1]);
             id = await stream.Add(DataHelper.Defalut.Employees[2]);
             var len = await stream.Len();
-            Assert.Equal(len, 3);
+            Write(len);
         }
         [Fact]
         public async void XLEN()
@@ -72,7 +72,7 @@ namespace BeetleX.Redis.XUnitTest
         public async void XREAD()
         {
             RedisStream<Employee> stream = DB.CreateStream<Employee>("employees_stream");
-            var items = await stream.Read(null,null, "0-0");
+            var items = await stream.Read(0, null, "0-0");
             Write(items);
         }
         [Fact]
@@ -84,5 +84,32 @@ namespace BeetleX.Redis.XUnitTest
             var len = await stream.Len();
             Assert.Equal(len, 0);
         }
+        [Fact]
+        public async void XGROUP_CREATE()
+        {
+            RedisStream<Employee> stream = DB.CreateStream<Employee>("employees_stream");
+            var group = await stream.CreateGroup("henry");
+        }
+        [Fact]
+        public async void XGROUP_READ()
+        {
+            RedisStream<Employee> stream = DB.CreateStream<Employee>("employees_stream");
+            var group = await stream.CreateGroup("g1");
+            var items = await group.Read("henry");
+            Write(items);
+
+        }
+        [Fact]
+        public async void XACK()
+        {
+            RedisStream<Employee> stream = DB.CreateStream<Employee>("employees_stream");
+            var group = await stream.CreateGroup("g1");
+            var items = await group.Read("henry", "0");
+            await group.Ack((from a in items select a.ID).ToArray());
+            items = await group.Read("henry","0");
+            Write(items);
+        }
+
+
     }
 }
