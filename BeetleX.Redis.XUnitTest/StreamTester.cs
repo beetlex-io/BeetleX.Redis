@@ -5,6 +5,7 @@ using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 using System.Linq;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace BeetleX.Redis.XUnitTest
 {
@@ -43,6 +44,7 @@ namespace BeetleX.Redis.XUnitTest
             var id = await stream.Add(DataHelper.Defalut.Employees[0]);
             id = await stream.Add(DataHelper.Defalut.Employees[1]);
             id = await stream.Add(DataHelper.Defalut.Employees[2]);
+
             var len = await stream.Len();
             Write(len);
         }
@@ -59,6 +61,7 @@ namespace BeetleX.Redis.XUnitTest
         {
             RedisStream<Employee> stream = DB.GetStream<Employee>("employees_stream");
             var items = await stream.Range();
+            items = await stream.Read(0);
             Write(items);
         }
         [Fact]
@@ -66,6 +69,15 @@ namespace BeetleX.Redis.XUnitTest
         {
             RedisStream<Employee> stream = DB.GetStream<Employee>("employees_stream");
             var items = await stream.RevRange();
+            Write(items);
+        }
+        [Fact]
+        public async void XREADProperties()
+        {
+            RedisStream<Dictionary<string,string>> stream = DB.GetStream<Dictionary<string, string>>("employees_stream");
+            var items = await stream.RangeAll();
+            Write(items);
+            items = await stream.RevRangeAll();
             Write(items);
         }
         [Fact]
@@ -95,7 +107,7 @@ namespace BeetleX.Redis.XUnitTest
         {
             RedisStream<Employee> stream = DB.GetStream<Employee>("employees_stream");
             var group = await stream.GetGroup("g1");
-            var items = await group.Read("henry","0");
+            var items = await group.Read("henry", "0");
             Write(items);
 
         }
@@ -104,11 +116,11 @@ namespace BeetleX.Redis.XUnitTest
         {
             RedisStream<Employee> stream = DB.GetStream<Employee>("employees_stream");
             var group = await stream.GetGroup("g1");
-            var items = await group.Read("henry","0");
+            var items = await group.Read("henry", "0");
             foreach (var item in items)
                 await item.Ack();
             //await group.Ack((from a in items select a.ID).ToArray());
-            items = await group.Read("henry","0");
+            items = await group.Read("henry");
             Write(items);
         }
     }

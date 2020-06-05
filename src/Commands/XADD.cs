@@ -36,8 +36,19 @@ namespace BeetleX.Redis.Commands
                 AddText(MAXLEN.Value);
             }
             AddText(mID);
-            AddText("data");
-            AddData(Data);
+            if (Data is Dictionary<string, string> kv)
+            {
+                foreach (var item in kv)
+                {
+                    AddText(item.Key);
+                    AddText(item.Value);
+                }
+            }
+            else
+            {
+                AddText("data");
+                AddData(Data);
+            }
         }
 
         private Result OnRead(RedisRequest request, PipeStream stream)

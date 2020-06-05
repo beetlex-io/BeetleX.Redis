@@ -24,6 +24,19 @@ namespace BeetleX.Redis
             return Add(data, null, id);
         }
 
+        public ValueTask<string> Add(Dictionary<string, string> properties, string id = null)
+        {
+            return Add(properties, id);
+        }
+
+        public ValueTask<string> Add(params Tuple<string, string>[] properties)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            foreach (var item in properties)
+                data[item.Item1] = item.Item1;
+            return Add(data);
+        }
+
         public async ValueTask<string> Add(object data, int? maxlen, string id)
         {
             Commands.XADD cmd = new Commands.XADD(Name, id);
@@ -51,6 +64,11 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
+        public ValueTask<List<StreamDataItem<T>>> RangeAll(int? count = null)
+        {
+            return Range("0", null, count);
+        }
+
         public ValueTask<List<StreamDataItem<T>>> Range(int? count = null)
         {
             return Range(null, null, count);
@@ -69,9 +87,15 @@ namespace BeetleX.Redis
             foreach (var item in result.Data)
             {
                 ((StreamDataItem<T>)item.Data).Stream = this;
+                ((StreamDataItem<T>)item.Data).StreamName = Name;
                 items.Add((StreamDataItem<T>)item.Data);
             }
             return items;
+        }
+
+        public ValueTask<List<StreamDataItem<T>>> RevRangeAll(int? count = null)
+        {
+            return RevRange(null, "0", count);
         }
 
         public ValueTask<List<StreamDataItem<T>>> RevRange(int? count = null)
@@ -92,12 +116,13 @@ namespace BeetleX.Redis
             foreach (var item in result.Data)
             {
                 ((StreamDataItem<T>)item.Data).Stream = this;
+                ((StreamDataItem<T>)item.Data).StreamName = Name;
                 items.Add((StreamDataItem<T>)item.Data);
             }
             return items;
         }
 
-        
+
 
         public ValueTask<List<StreamDataItem<T>>> Read(int? block = null)
         {

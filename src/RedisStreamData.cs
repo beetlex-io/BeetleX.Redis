@@ -11,7 +11,7 @@ namespace BeetleX.Redis
     class StreamDataReceive<T>
     {
 
-     
+
         private Result mResult = new Result();
 
         private StreamDataReader<T> mReader = new StreamDataReader<T>();
@@ -162,6 +162,12 @@ namespace BeetleX.Redis
 
         private int? mValueLength = 0;
 
+        private int? mFields = null;
+
+        private string mFieldName = null;
+
+        private Dictionary<string, string> mProperty;
+
         private ItemReadStaus mReadStatus = ItemReadStaus.None;
 
         public bool Read(RedisRequest request, PipeStream stream)
@@ -218,12 +224,18 @@ namespace BeetleX.Redis
                             return true;
                         mID = null;
                         mValueLength = null;
+                        mFields = null;
                         mReadStatus = ItemReadStaus.None;
                         goto ReRead;
+                    }
+                    else
+                    {
+                        mFields = int.Parse(line.Substring(1))/2;
                     }
                     mReadStatus = ItemReadStaus.ReadBody;
                 }
             }
+        ReReadProperty:
             if (mReadStatus == ItemReadStaus.ReadBody)
             {
                 if (stream.TryReadLine(out line))
@@ -234,9 +246,9 @@ namespace BeetleX.Redis
             }
             if (mReadStatus == ItemReadStaus.ReadFieldLength)
             {
-                if (stream.Length >= (mValueLength.Value + 2))
+                if (stream.TryReadLine(out line))
                 {
-                    stream.ReadFree(mValueLength.Value + 2);
+                    mFieldName = line;
                     mReadStatus = ItemReadStaus.ReadField;
                 }
             }
@@ -252,16 +264,43 @@ namespace BeetleX.Redis
             {
                 if (stream.Length >= (mValueLength.Value + 2))
                 {
-                    var data = request.Command.DataFormater.DeserializeObject(typeof(T), request.Client, stream, mValueLength.Value);
-                    stream.ReadFree(2);
-                    StreamDataItem<T> item = new StreamDataItem<T>();
-                    item.ID = mID;
-                    item.Data = (T)data;
-                    Items.Add(item);
+                    if (typeof(T) == typeof(Dictionary<string, string>))
+                    {
+                        if (mProperty == null)
+                        {
+                            mProperty = new Dictionary<string, string>();
+                        }
+                        mProperty[mFieldName] = stream.ReadLine();
+                        if (mProperty.Count >= mFields)
+                        {
+                            StreamDataItem<T> item = new StreamDataItem<T>();
+                            item.ID = mID;
+                            item.Data = (T)(object)mProperty;
+                            Items.Add(item);
+                            mProperty = null;
+                            mFieldName = null;
+                            mFields = null;
+                        }
+                        else
+                        {
+                            mReadStatus = ItemReadStaus.ReadBody;
+                            goto ReReadProperty;
+                        }
+                    }
+                    else
+                    {
+                        var data = request.Command.DataFormater.DeserializeObject(typeof(T), request.Client, stream, mValueLength.Value);
+                        stream.ReadFree(2);
+                        StreamDataItem<T> item = new StreamDataItem<T>();
+                        item.ID = mID;
+                        item.Data = (T)data;
+                        Items.Add(item);
+                    }
                     if (mCount != null && Items.Count >= mCount.Value)
                         return true;
                     mID = null;
                     mValueLength = null;
+                    mFields = null;
                     mReadStatus = ItemReadStaus.None;
                     goto ReRead;
                 }
