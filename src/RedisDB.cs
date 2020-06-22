@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BeetleX.Redis
 {
-    public class RedisDB : IHostHandler
+    public class RedisDB : IHostHandler,IDisposable
     {
         public RedisDB(int db = 0, IDataFormater dataFormater = null, IHostHandler hostHandler = null)
         {
@@ -36,7 +36,7 @@ namespace BeetleX.Redis
 
         private void OnDetection(object state)
         {
-            mDetectionTime.Change(-1, -1);
+            mDetectionTime?.Change(-1, -1);
             if (AutoPing)
             {
                 var wHosts = mWriteActives;
@@ -46,7 +46,7 @@ namespace BeetleX.Redis
                 foreach (var item in rHost)
                     item.Ping();
             }
-            mDetectionTime.Change(1000, 1000);
+            mDetectionTime?.Change(1000, 1000);
 
         }
 
@@ -644,5 +644,23 @@ namespace BeetleX.Redis
 
         }
 
+        private bool mIsDisposed = false;
+
+        public void Dispose()
+        {
+            if (!mIsDisposed)
+            {
+                mIsDisposed = true;
+                if (mDetectionTime != null)
+                {
+                    mDetectionTime.Dispose();
+                    mDetectionTime = null;
+                }
+                foreach (var item in mReadHosts)
+                    item.Dispose();
+                foreach (var item in mWriteHosts)
+                    item.Dispose();
+            }
+        }
     }
 }

@@ -35,6 +35,16 @@ namespace BeetleX.Redis.XUnitTest
             }
         }
         [Fact]
+        public async void DBDisposed()
+        {
+            using(RedisDB db = new RedisDB())
+            {
+                db.Host.AddWriteHost("127.0.0.1");
+                await db.Ping();
+            }
+        }
+
+        [Fact]
         public async void Info()
         {
             var info = await DB.Info();
