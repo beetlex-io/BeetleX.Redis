@@ -1,6 +1,7 @@
 ﻿using BeetleX.Buffers;
 using BeetleX.Clients;
 using BeetleX.Redis.Commands;
+using BeetleX.Tracks;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,9 +16,12 @@ namespace BeetleX.Redis
             Client.TcpClient.DataReceive = OnReceive;
             Client.TcpClient.ClientError = OnError;
             Command = cmd;
+            Host = host;
             Types = types;
             Host = host;
         }
+
+        internal XActivity Activity { get; set; }
 
         public RedisHost Host { get; set; }
 
@@ -52,9 +56,11 @@ namespace BeetleX.Redis
             }
         }
 
+        private CodeTrack mReceiveTrack;
+
         private void OnReceive(IClient c, ClientReceiveArgs reader)
         {
-
+            mReceiveTrack = CodeTrackFactory.Track("Read", CodeTrackLevel.Function, Activity?.Id, "Redis", "Protocol");
             if (Command.NetworkReceive != null)
             {
                 var result = Command.NetworkReceive(this, reader.Stream.ToPipeStream());
@@ -332,9 +338,18 @@ namespace BeetleX.Redis
 
         public Task<Result> Execute()
         {
-            TaskCompletionSource = new TaskCompletionSource<Result>();
-            SendCommmand(Command);
-            return TaskCompletionSource.Task;
+            using (var tarck = CodeTrackFactory.Track(Command.Name, CodeTrackLevel.Module, null, "Redis", Client.Host))
+            {
+                if (tarck.Enabled)
+                {
+                    tarck.Activity?.AddTag("tag", "BeetleX Redis");
+                }
+                this.Activity = tarck.Activity;
+                Command.Activity = tarck.Activity;
+                TaskCompletionSource = new TaskCompletionSource<Result>();
+                SendCommmand(Command);
+                return TaskCompletionSource.Task;
+            }
         }
 
         private int mCompletedStatus = 0;
@@ -350,6 +365,8 @@ namespace BeetleX.Redis
                 Result.Messge = message;
                 Host?.Push(Client);
                 Completed?.Invoke(this);
+                mReceiveTrack?.Dispose();
+                mReceiveTrack = null;
                 // TaskCompletion();
                 if (Command.GetType() == typeof(SELECT) || Command.GetType() == typeof(AUTH))
                 {
@@ -359,6 +376,7 @@ namespace BeetleX.Redis
                 {
                     ResultDispatch.DispatchCenter.Enqueue(this, 3);
                 }
+
 
             }
 

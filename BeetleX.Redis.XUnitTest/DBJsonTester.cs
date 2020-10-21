@@ -15,9 +15,9 @@ namespace BeetleX.Redis.XUnitTest
         public DBJsonTester(ITestOutputHelper output)
         {
             this.Console = output;
-            Redis.Default.Host.AddWriteHost("localhost");
-            Redis.Default.DataFormater = new JsonFormater();
-            DB = Redis.Default;
+            DefaultRedis.Instance.Host.AddWriteHost("localhost");
+            DefaultRedis.Instance.DataFormater = new JsonFormater();
+            DB = DefaultRedis.Instance;
         }
 
         private RedisDB DB;

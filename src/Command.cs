@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections.Concurrent;
+using BeetleX.Tracks;
+
 namespace BeetleX.Redis
 {
     public abstract class Command
@@ -43,6 +45,8 @@ namespace BeetleX.Redis
         {
 
         }
+
+        internal XActivity Activity { get; set; }
 
         public Func<Result, PipeStream, RedisClient, bool> Reader { get; set; }
 
@@ -90,20 +94,23 @@ namespace BeetleX.Redis
 
         public void Execute(RedisClient client, PipeStream stream)
         {
-            OnExecute();
-            var data = GetMsgHeaderLengthData(mParameters.Count);
-            if (data != null)
+            using (var track = CodeTrackFactory.Track("Write", CodeTrackLevel.Function, Activity?.Id, "Redis", "Protocol"))
             {
-                stream.Write(data, 0, data.Length);
-            }
-            else
-            {
-                string headerStr = $"*{mParameters.Count}\r\n";
-                stream.Write(headerStr);
-            }
-            for (int i = 0; i < mParameters.Count; i++)
-            {
-                mParameters[i].Write(client, stream);
+                OnExecute();
+                var data = GetMsgHeaderLengthData(mParameters.Count);
+                if (data != null)
+                {
+                    stream.Write(data, 0, data.Length);
+                }
+                else
+                {
+                    string headerStr = $"*{mParameters.Count}\r\n";
+                    stream.Write(headerStr);
+                }
+                for (int i = 0; i < mParameters.Count; i++)
+                {
+                    mParameters[i].Write(client, stream);
+                }
             }
         }
 
@@ -127,6 +134,7 @@ namespace BeetleX.Redis
 
             public void Write(RedisClient client, PipeStream stream)
             {
+
                 if (ValueBuffer != null)
                 {
                     stream.Write(ValueBuffer, 0, ValueBuffer.Length);
@@ -168,6 +176,7 @@ namespace BeetleX.Redis
                     stream.Write(mBuffer, 0, len);
                 }
                 stream.Write(LineBytes, 0, 2);
+
             }
         }
 

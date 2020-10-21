@@ -12,8 +12,10 @@ namespace BeetleX.Redis
     {
         public RedisClient(bool ssl, string host, int port = 6379)
         {
+            Host = host;
             if (ssl)
             {
+                
                 TcpClient = BeetleX.SocketFactory.CreateSslClient<AsyncTcpClient>(host, port, "beetlex");
                 TcpClient.CertificateValidationCallback = (o, e, f, d) =>
                 {
@@ -25,6 +27,8 @@ namespace BeetleX.Redis
                 TcpClient = BeetleX.SocketFactory.CreateClient<AsyncTcpClient>(host, port);
             }
         }
+
+        public string Host { get; set; }
 
         public AsyncTcpClient TcpClient { get; private set; }
 

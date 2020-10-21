@@ -1,4 +1,5 @@
 ﻿using BeetleX.Redis.Commands;
+using BeetleX.Tracks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BeetleX.Redis
 {
-    public class RedisDB : IHostHandler,IDisposable
+    public class RedisDB : IHostHandler, IDisposable
     {
         public RedisDB(int db = 0, IDataFormater dataFormater = null, IHostHandler hostHandler = null)
         {
@@ -141,10 +142,12 @@ namespace BeetleX.Redis
         public async Task<Result> Execute(Command cmd, params Type[] types)
         {
             var host = cmd.Read ? Host.GetReadHost() : Host.GetWriteHost();
+
             if (host == null)
             {
                 return new Result() { ResultType = ResultType.NetError, Messge = "redis server is not available" };
             }
+
             var client = await host.Pop();
             if (client == null)
                 return new Result() { ResultType = ResultType.NetError, Messge = "exceeding maximum number of connections" };
