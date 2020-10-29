@@ -338,18 +338,11 @@ namespace BeetleX.Redis
 
         public Task<Result> Execute()
         {
-            using (var tarck = CodeTrackFactory.Track(Command.Name, CodeTrackLevel.Module, null, "Redis", Client.Host))
-            {
-                if (tarck.Enabled)
-                {
-                    tarck.Activity?.AddTag("tag", "BeetleX Redis");
-                }
-                this.Activity = tarck.Activity;
-                Command.Activity = tarck.Activity;
-                TaskCompletionSource = new TaskCompletionSource<Result>();
-                SendCommmand(Command);
-                return TaskCompletionSource.Task;
-            }
+
+            TaskCompletionSource = new TaskCompletionSource<Result>();
+            SendCommmand(Command);
+            return TaskCompletionSource.Task;
+
         }
 
         private int mCompletedStatus = 0;

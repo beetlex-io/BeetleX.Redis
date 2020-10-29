@@ -142,12 +142,10 @@ namespace BeetleX.Redis
         public async Task<Result> Execute(Command cmd, params Type[] types)
         {
             var host = cmd.Read ? Host.GetReadHost() : Host.GetWriteHost();
-
             if (host == null)
             {
                 return new Result() { ResultType = ResultType.NetError, Messge = "redis server is not available" };
             }
-
             var client = await host.Pop();
             if (client == null)
                 return new Result() { ResultType = ResultType.NetError, Messge = "exceeding maximum number of connections" };
@@ -157,10 +155,18 @@ namespace BeetleX.Redis
                 host.Push(client);
                 return result;
             }
-            RedisRequest request = new RedisRequest(host, client, cmd, types);
-            result = await request.Execute();
-            return result;
-
+            using (var tarck = CodeTrackFactory.Track(cmd.Name, CodeTrackLevel.Module, null, "Redis", client.Host))
+            {
+                if (tarck.Enabled)
+                {
+                    tarck.Activity?.AddTag("tag", "BeetleX Redis");
+                }
+                cmd.Activity = tarck.Activity;
+                RedisRequest request = new RedisRequest(host, client, cmd, types);
+                request.Activity = tarck.Activity;
+                result = await request.Execute();
+                return result;
+            }
         }
 
         public async ValueTask<string> Flushall()
