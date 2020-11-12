@@ -356,7 +356,6 @@ namespace BeetleX.Redis
                 Client.TcpClient.ClientError = null;
                 Result.ResultType = type;
                 Result.Messge = message;
-                Host?.Push(Client);
                 Completed?.Invoke(this);
                 mReceiveTrack?.Dispose();
                 mReceiveTrack = null;

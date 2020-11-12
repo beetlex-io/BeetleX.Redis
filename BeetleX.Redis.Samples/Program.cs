@@ -11,14 +11,15 @@ namespace BeetleX.Redis.Samples
         {
             CodeTrackFactory.Level = CodeTrackLevel.Code;
             DefaultRedis.Instance.DataFormater = new JsonFormater();
-            DefaultRedis.Instance.Host.AddWriteHost("192.168.1.19");
+            DefaultRedis.Instance.Host.AddWriteHost("127.0.0.1");
             var subscribe = DefaultRedis.Subscribe();
-            subscribe.Register<Employee>("employees",e=> {
+            subscribe.Register<Employee>("employees", e =>
+            {
                 Console.WriteLine($"Receive employee {e.FirstName} {e.LastName}");
             });
             subscribe.Listen();
             System.Threading.Thread.Sleep(1000);
-            using (CodeTrackFactory.BusinessTrackReport("Test", null, "Redis"))
+            using (CodeTrackFactory.TrackReport("Test", CodeTrackLevel.Bussiness, null))
             {
                 await Test();
             }
@@ -29,7 +30,7 @@ namespace BeetleX.Redis.Samples
         static async Task Test()
         {
             await DefaultRedis.Instance.Flushall();
-            
+
             Write(await DefaultRedis.Get<Employee>("nonexisting"));
             Write(await DefaultRedis.Set("emp3", GetEmployee(3)));
             Write(await DefaultRedis.Get<Employee>("emp3"));
@@ -127,7 +128,7 @@ namespace BeetleX.Redis.Samples
             Write(await list.Range(0, -1));
             Line();
 
-          //  await Redis.Default.Flushall();
+            //  await Redis.Default.Flushall();
             var table = DefaultRedis.CreateHashTable("myhash");
             Write(await table.MSet(("emp1", GetEmployee(1))));
             Write(await table.Del("emp1"));

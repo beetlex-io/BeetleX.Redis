@@ -110,7 +110,7 @@ namespace BeetleX.Redis
                             || task.Result.ResultType == ResultType.NetError)
                             return task.Result;
                     }
-                   
+
                     Commands.SELECT select = new Commands.SELECT(DB);
                     var req = new RedisRequest(null, client, select, typeof(string));
                     var t = req.Execute();
@@ -145,7 +145,9 @@ namespace BeetleX.Redis
                 }
             }
             if (item != null)
-                item.SetResult(client);
+            {
+                Task.Run(() => item.SetResult(client));
+            }
         }
 
         public void Dispose()

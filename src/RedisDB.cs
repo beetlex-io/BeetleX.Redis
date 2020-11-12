@@ -149,23 +149,30 @@ namespace BeetleX.Redis
             var client = await host.Pop();
             if (client == null)
                 return new Result() { ResultType = ResultType.NetError, Messge = "exceeding maximum number of connections" };
-            var result = host.Connect(client);
-            if (result.IsError)
+            try
             {
-                host.Push(client);
-                return result;
-            }
-            using (var tarck = CodeTrackFactory.Track(cmd.Name, CodeTrackLevel.Module, null, "Redis", client.Host))
-            {
-                if (tarck.Enabled)
+                var result = host.Connect(client);
+                if (result.IsError)
                 {
-                    tarck.Activity?.AddTag("tag", "BeetleX Redis");
+                    return result;
                 }
-                cmd.Activity = tarck.Activity;
-                RedisRequest request = new RedisRequest(host, client, cmd, types);
-                request.Activity = tarck.Activity;
-                result = await request.Execute();
-                return result;
+                using (var tarck = CodeTrackFactory.Track(cmd.Name, CodeTrackLevel.Module, null, "Redis", client.Host))
+                {
+                    if (tarck.Enabled)
+                    {
+                        tarck.Activity?.AddTag("tag", "BeetleX Redis");
+                    }
+                    cmd.Activity = tarck.Activity;
+                    RedisRequest request = new RedisRequest(host, client, cmd, types);
+                    request.Activity = tarck.Activity;
+                    result = await request.Execute();
+                    return result;
+                }
+            }
+            finally
+            {
+                if (client != null)
+                    host.Push(client);
             }
         }
 
