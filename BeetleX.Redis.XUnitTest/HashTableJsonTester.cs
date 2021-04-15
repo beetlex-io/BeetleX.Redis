@@ -68,73 +68,73 @@ namespace BeetleX.Redis.XUnitTest
         public async void HDel()
         {
             await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(await table.MSet(("emp1", GetEmployee(1))));
-Write(await table.Del("emp1"));
-Write(await table.Del("emp2"));
-Write(await table.Len());
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.MSet(("emp1", GetEmployee(1))));
+            Write(await table.Del("emp1"));
+            Write(await table.Del("emp2"));
+            Write(await table.Len());
         }
         [Fact]
         public async void HExists()
         {
             await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(await table.MSet(("emp1", GetEmployee(1))));
-Write(await table.Exists("emp1"));
-Write(await table.Exists("emp2"));
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.MSet(("emp1", GetEmployee(1))));
+            Write(await table.Exists("emp1"));
+            Write(await table.Exists("emp2"));
         }
         [Fact]
         public async void HGet()
         {
             await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(await table.MSet(("emp1", GetEmployee(1))));
-Write(await table.Get<Employee>("emp1"));
-Write(await table.Get<Employee>("emp2"));
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.MSet(("emp1", GetEmployee(1))));
+            Write(await table.Get<Employee>("emp1"));
+            Write(await table.Get<Employee>("emp2"));
         }
 
         [Fact]
         public async void HKeys()
         {
             await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(await table.MSet(("field1", GetEmployee(1)), ("field2", GetEmployee(2))));
-Write(await table.Keys());
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.MSet(("field1", GetEmployee(1)), ("field2", GetEmployee(2))));
+            Write(await table.Keys());
         }
         [Fact]
         public async void HLen()
         {
             await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(table.MSet(("field1", GetCustomer(1)), ("field2", GetCustomer(2))));
-Write(await table.Len());
+            var table = DB.CreateHashTable("myhash");
+            Write(table.MSet(("field1", GetCustomer(1)), ("field2", GetCustomer(2))));
+            Write(await table.Len());
         }
         [Fact]
         public async void HMGet()
         {
-await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(await table.MSet(
-("emp", GetEmployee(1)),
-("order", GetOrder(1)),
-("customer", GetCustomer(1))
-));
-var values = await table.Get<Employee, Order, Customer>("emp", "order", "customer");
-Write(values.Item1);
-Write(values.Item2);
-Write(values.Item3);
+            await DB.Flushall();
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.MSet(
+            ("emp", GetEmployee(1)),
+            ("order", GetOrder(1)),
+            ("customer", GetCustomer(1))
+            ));
+            var values = await table.Get<Employee, Order, Customer>("emp", "order", "customer");
+            Write(values.Item1);
+            Write(values.Item2);
+            Write(values.Item3);
         }
         [Fact]
         public async void HMGet2()
         {
             await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(await table.MSet(("emp", GetEmployee(1)),
-("order", GetOrder(1))
-));
-var values = await table.Get<Employee, Order>("emp", "order");
-Write(values.Item1);
-Write(values.Item2);
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.MSet(("emp", GetEmployee(1)),
+            ("order", GetOrder(1))
+            ));
+            var values = await table.Get<Employee, Order>("emp", "order");
+            Write(values.Item1);
+            Write(values.Item2);
 
         }
 
@@ -194,37 +194,37 @@ Write(values.Item2);
         public async void HMSet()
         {
             await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(await table.MSet(("field1", GetEmployee(1)), ("field2", GetCustomer(1))));
-Write(await table.Get<Employee>("field1"));
-Write(await table.Get<Customer>("field2"));
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.MSet(("field1", GetEmployee(1)), ("field2", GetCustomer(1))));
+            Write(await table.Get<Employee>("field1"));
+            Write(await table.Get<Customer>("field2"));
         }
         [Fact]
         public async void HSet()
         {
             await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(await table.Set("field1", GetEmployee(1)));
-Write(await table.Get<Employee>("field1"));
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.Set("field1", GetEmployee(1)));
+            Write(await table.Get<Employee>("field1"));
         }
         [Fact]
         public async void HSetNX()
         {
             await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(await table.SetNX("field", GetEmployee(1)));
-Write(await table.SetNX("field", GetEmployee(2)));
-Write(await table.Get<Employee>("field"));
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.SetNX("field", GetEmployee(1)));
+            Write(await table.SetNX("field", GetEmployee(2)));
+            Write(await table.Get<Employee>("field"));
         }
         // [Fact]
         public async void HStrLen()
         {
             await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(await table.MSet(("f1", "helloworld"), ("f2", 99), ("f3", -256)));
-Write(await table.StrLen("f1"));
-Write(await table.StrLen("f2"));
-Write(await table.StrLen("f3"));
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.MSet(("f1", "helloworld"), ("f2", 99), ("f3", -256)));
+            Write(await table.StrLen("f1"));
+            Write(await table.StrLen("f2"));
+            Write(await table.StrLen("f3"));
         }
     }
 }
