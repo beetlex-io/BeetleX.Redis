@@ -112,6 +112,11 @@ A high-performance async/non-blocking  redis client components for dotnet core,d
 [XREAD](https://redis.io/commands/XREAD)|
 [XREADGROUP](https://redis.io/commands/XREADGROUP)|
 [XREVRANGE](https://redis.io/commands/XREVRANGE)|
+[GEOADD](https://redis.io/commands/GEOADD)|
+[GEOPOS](https://redis.io/commands/GEOPOS)|
+[GEODIST](https://redis.io/commands/GEODIST)|
+[GEORADIUS](https://redis.io/commands/GEORADIUS)|
+[GEORADIUSBYMEMBER](https://redis.io/commands/GEORADIUSBYMEMBER)|
 ## nuget
 https://www.nuget.org/packages/BeetleX.Redis/
 
