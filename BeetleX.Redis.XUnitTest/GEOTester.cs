@@ -45,6 +45,7 @@ namespace BeetleX.Redis.XUnitTest
         }
 
 
+
         private void Write(object result)
         {
             if (result is System.Collections.IEnumerable && !(result is string))
@@ -60,44 +61,50 @@ namespace BeetleX.Redis.XUnitTest
                 Console.WriteLine($">>{result?.ToJson()}");
             }
         }
+
+        private GEO GetGEO()
+        {
+            return DB.GetGEO();
+        }
+
         [Fact]
         public async void GEOAdd()
         {
-            var len = await DB.GEOAdd("Sicily", (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania"));
-            
+            var len = await GetGEO().GEOAdd("Sicily", (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania"));
+
         }
         [Fact]
         public async void GEOPOS()
         {
-            var items = await DB.GEOPos("Sicily", "Palermo", "Catania", "NonExisting");
+            var items = await GetGEO().GEOPos("Sicily", "Palermo", "Catania", "NonExisting");
             Write(items);
         }
         [Fact]
         public async void GEODist()
         {
-            var len = await DB.GEOAdd("Sicily", (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania"));
-            var value = await DB.GEODist("Sicily", "Palermo", "Catania");
+            var len = await GetGEO().GEOAdd("Sicily", (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania"));
+            var value = await GetGEO().GEODist("Sicily", "Palermo", "Catania");
 
-            value = await DB.GEODist("Sicily", "Palermo", "Catania", Commands.GEODISTUnit.km);
+            value = await GetGEO().GEODist("Sicily", "Palermo", "Catania", Commands.GEODISTUnit.km);
 
-            value = await DB.GEODist("Sicily", "Palermo", "Catania", Commands.GEODISTUnit.mi);
+            value = await GetGEO().GEODist("Sicily", "Palermo", "Catania", Commands.GEODISTUnit.mi);
 
-            value = await DB.GEODist("Sicily", "Foo", "Bar");
+            value = await GetGEO().GEODist("Sicily", "Foo", "Bar");
             Assert.Equal(-1, value);
         }
         [Fact]
         public async void GEORADIUS()
         {
-            var len = await DB.GEOAdd("Sicily", (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania"));
-            var items = await DB.GEORadius("Sicily", 15, 37, 200, Commands.GEODISTUnit.km);
+            var len = await GetGEO().GEOAdd("Sicily", (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania"));
+            var items = await GetGEO().GEORadius("Sicily", 15, 37, 200, Commands.GEODISTUnit.km);
             Write(items);
         }
         [Fact]
         public async void GEORADIUSBYMEMBER()
         {
-            await DB.GEOAdd("Sicily", (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania"));
-            await DB.GEOAdd("Sicily", (13.583333, 37.316667, "Agrigento"));
-            var items = await DB.GEORadiusByMember("Sicily", "Agrigento", 92, Commands.GEODISTUnit.km);
+            await GetGEO().GEOAdd("Sicily", (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania"));
+            await GetGEO().GEOAdd("Sicily", (13.583333, 37.316667, "Agrigento"));
+            var items = await GetGEO().GEORadiusByMember("Sicily", "Agrigento", 92, Commands.GEODISTUnit.km);
             Write(items);
         }
     }

@@ -68,16 +68,18 @@ namespace BeetleX.Redis.Commands
         {
             if (mCount == null)
             {
-                stream.ReadLine();
+                var status = stream.ReadLine();
+                if (status[0] == '-')
+                    throw new RedisException(status.Substring(1));
                 stream.ReadLine();
                 var cursor = stream.ReadLine();
                 NextCursor = int.Parse(cursor);
                 var countline = stream.ReadLine();
                 mCount = int.Parse(countline.Substring(1));
             }
-            while(stream.TryReadLine(out string line))
+            while (stream.TryReadLine(out string line))
             {
-                if(mItemLength ==null)
+                if (mItemLength == null)
                 {
                     mItemLength = int.Parse(line.Substring(1));
                 }
