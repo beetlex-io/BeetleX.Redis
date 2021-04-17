@@ -117,6 +117,21 @@ A high-performance async/non-blocking  redis client components for dotnet core,d
 [GEODIST](https://redis.io/commands/GEODIST)|
 [GEORADIUS](https://redis.io/commands/GEORADIUS)|
 [GEORADIUSBYMEMBER](https://redis.io/commands/GEORADIUSBYMEMBER)|
+[SADD](https://redis.io/commands/SADD)|
+[SCARD](https://redis.io/commands/SCARD)|
+[SDIFF](https://redis.io/commands/SDIFF)|
+[SDIFFSTORE](https://redis.io/commands/SDIFFSTORE)|
+[SINTER](https://redis.io/commands/SINTER)|
+[SINTERSTORE](https://redis.io/commands/SINTERSTORE)|
+[SISMEMBER](https://redis.io/commands/SISMEMBER)|
+[SMEMBER](https://redis.io/commands/SMEMBER)|
+[SMOVE](https://redis.io/commands/SMOVE)|
+[SPOP](https://redis.io/commands/SPOP)|
+[SRANDMEMBER](https://redis.io/commands/SRANDMEMBER)|
+[SREM](https://redis.io/commands/SREM)|
+[SSCAN](https://redis.io/commands/SSCAN)|
+[SUNION](https://redis.io/commands/SUNION)|
+[SUNIONSTORE](https://redis.io/commands/SUNIONSTORE)|
 ## nuget
 https://www.nuget.org/packages/BeetleX.Redis/
 
