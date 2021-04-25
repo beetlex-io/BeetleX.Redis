@@ -28,7 +28,7 @@ namespace BeetleX.Redis.Commands
         public override void OnExecute()
         {
             base.OnExecute();
-            AddText(Key);
+            OnWriteKey(Key);
             AddText(Start);
             AddText(Stop);
         }

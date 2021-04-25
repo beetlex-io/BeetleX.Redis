@@ -37,7 +37,7 @@ namespace BeetleX.Redis.Commands
                 AddText(Count.Value);
             }
             AddText("STREAMS");
-            AddText(mStream);
+            OnWriteKey(mStream);
             if (string.IsNullOrEmpty(Start))
             {
                 AddText("$");

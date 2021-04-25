@@ -30,7 +30,7 @@ namespace BeetleX.Redis.Commands
         public override void OnExecute()
         {
             base.OnExecute();
-            AddText(Key);
+            OnWriteKey(Key);
             AddText(Member1);
             AddText(Member2);
             AddText(Unit.ToString());

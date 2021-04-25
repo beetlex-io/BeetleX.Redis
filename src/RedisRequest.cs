@@ -320,11 +320,11 @@ namespace BeetleX.Redis
 
         public TaskCompletionSource<Result> TaskCompletionSource { get; protected set; }
 
-        internal void SendCommmand(Command cmd)
+        internal void SendCommmand(RedisDB db, Command cmd)
         {
             try
             {
-                Client.Send(cmd);
+                Client.Send(db,cmd);
                 if (!Client.TcpClient.IsConnected)
                 {
                     OnCompleted(ResultType.NetError, "Connection is closed!");
@@ -336,11 +336,11 @@ namespace BeetleX.Redis
             }
         }
 
-        public Task<Result> Execute()
+        public Task<Result> Execute(RedisDB db)
         {
 
             TaskCompletionSource = new TaskCompletionSource<Result>();
-            SendCommmand(Command);
+            SendCommmand(db,Command);
             return TaskCompletionSource.Task;
 
         }

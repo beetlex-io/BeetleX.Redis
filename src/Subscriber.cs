@@ -44,7 +44,7 @@ namespace BeetleX.Redis
             if (mChannels.TryRemove(channel, out ChannelRegister type))
             {
                 Commands.UNSUBSCRIBE cmd = new Commands.UNSUBSCRIBE(channel);
-                subscribeRequest?.SendCommmand(cmd);
+                subscribeRequest?.SendCommmand(mDB, cmd);
             }
         }
 
@@ -198,7 +198,7 @@ namespace BeetleX.Redis
                     mCommand = new Commands.SUBSCRIBE(mDB.DataFormater, mChannels.Keys.ToArray());
                     mCommand.Reader = OnBlockingRead;
                     subscribeRequest = new SubscribeRequest(host, redisClient, mCommand, typeof(string));
-                    result = await subscribeRequest.Execute();
+                    result = await subscribeRequest.Execute(mDB);
                 }
                 if (result.ResultType == ResultType.NetError || result.ResultType == ResultType.DataError || result.ResultType == ResultType.Error)
                 {
@@ -236,7 +236,7 @@ namespace BeetleX.Redis
             if (System.Threading.Interlocked.CompareExchange(ref mDisposed, 1, 0) == 0)
             {
                 Commands.UNSUBSCRIBE cmd = new Commands.UNSUBSCRIBE(null);
-                subscribeRequest?.SendCommmand(cmd);
+                subscribeRequest?.SendCommmand(mDB, cmd);
             }
         }
 

@@ -39,7 +39,7 @@ namespace BeetleX.Redis.Commands
 
         private Result OnReceive(RedisRequest request, PipeStream stream)
         {
-            if (mScanResult.Read(stream))
+            if (mScanResult.Read(stream, this))
             {
                 Result result = new Result();
                 result.ResultType = ResultType.Object;
@@ -64,7 +64,7 @@ namespace BeetleX.Redis.Commands
 
         private int? mItemLength;
 
-        public bool Read(PipeStream stream)
+        public bool Read(PipeStream stream, Command cmd)
         {
             if (mCount == null)
             {
@@ -85,6 +85,8 @@ namespace BeetleX.Redis.Commands
                 }
                 else
                 {
+                    if (!string.IsNullOrEmpty(cmd.KeyPrefix))
+                        line = line.Replace(cmd.KeyPrefix, "");
                     Keys.Add(line);
                     mItemLength = null;
                 }

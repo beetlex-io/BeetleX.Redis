@@ -27,7 +27,7 @@ namespace BeetleX.Redis.Commands
         public override void OnExecute()
         {
             base.OnExecute();
-            AddText(Key);
+            OnWriteKey(Key);
             AddText(Cursor);
             if (!string.IsNullOrEmpty(Pattern))
             {
@@ -42,7 +42,7 @@ namespace BeetleX.Redis.Commands
 
         private Result OnReceive(RedisRequest request, PipeStream stream)
         {
-            if (mScanResult.Read(stream))
+            if (mScanResult.Read(stream,this))
             {
                 Result result = new Result();
                 result.ResultType = ResultType.Object;

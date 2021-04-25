@@ -26,7 +26,7 @@ namespace BeetleX.Redis.Commands
         {
             base.OnExecute();
             AddText("CREATE");
-            AddText(mStream);
+            OnWriteKey(mStream);
             AddText(mGroup);
             AddText(Start);
             AddText("mkstream");
