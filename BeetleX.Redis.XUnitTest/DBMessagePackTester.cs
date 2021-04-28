@@ -14,7 +14,7 @@ namespace BeetleX.Redis.XUnitTest
         public DBMessagePackTester(ITestOutputHelper output)
         {
             this.Console = output;
-            DB.Host.AddWriteHost("192.168.2.19");
+            DB.Host.AddWriteHost("localhost");
         }
 
         private RedisDB DB = new RedisDB(0, new MessagePackFormater());
