@@ -2,15 +2,17 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <ServerGarbageCollection>true</ServerGarbageCollection>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BeetleX.CodeBenchmark" Version="1.0.8" />
-    <PackageReference Include="BeetleX.Redis" Version="0.7.0" />
-    <PackageReference Include="Northwind.Data" Version="1.0.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.0.571" />
+    <PackageReference Include="BeetleX.CodeBenchmark" Version="1.1.1" />
+    <PackageReference Include="BeetleX.Redis" Version="1.2.1" />
+    <PackageReference Include="FreeRedis" Version="0.3.5" />
+    <PackageReference Include="NewLife.Redis" Version="3.9.2021.407" />
+    <PackageReference Include="Northwind.Data" Version="1.2.3" />
+    <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
   </ItemGroup>
 
   <ItemGroup>

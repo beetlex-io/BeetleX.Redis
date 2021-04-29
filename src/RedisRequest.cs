@@ -366,7 +366,10 @@ namespace BeetleX.Redis
                 }
                 else
                 {
-                    ResultDispatch.DispatchCenter.Enqueue(this, 3);
+                    if (ResultDispatch.UseDispatch)
+                        ResultDispatch.DispatchCenter.Enqueue(this, 3);
+                    else
+                        TaskCompletion();
                 }
 
 

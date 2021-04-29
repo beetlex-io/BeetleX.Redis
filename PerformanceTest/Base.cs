@@ -60,4 +60,52 @@ namespace PerformanceTest
 
         protected static IDatabase RedisDB;
     }
+
+    public abstract class FreeRedisBase : IExample
+    {
+        public void Dispose()
+        {
+
+        }
+
+        public virtual Task Execute()
+        {
+            return Task.CompletedTask;
+        }
+
+        public void Initialize(Benchmark benchmark)
+        {
+            if (cli == null)
+            {
+                cli = new FreeRedis.RedisClient($"{Program.Host}:6379,min poolsize=10");
+            }
+        }
+
+        public static FreeRedis.RedisClient cli;
+    }
+
+    public abstract class NewLifeRedisBase : IExample
+    {
+        public void Dispose()
+        {
+
+        }
+
+        public virtual Task Execute()
+        {
+            return Task.CompletedTask;
+        }
+
+        public void Initialize(Benchmark benchmark)
+        {
+            if (cli == null)
+            {
+                cli = new NewLife.Caching.Redis($"{Program.Host}:6379", null, 0);
+            }
+        }
+
+        public static NewLife.Caching.Redis cli;
+
+    }
+
 }

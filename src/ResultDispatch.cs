@@ -7,6 +7,8 @@ namespace BeetleX.Redis
 {
     public class ResultDispatch
     {
+        public static bool UseDispatch { get; set; } = false;
+
         static ResultDispatch()
         {
             DispatchCenter = new DispatchCenter<RedisRequest>(OnExecute);
