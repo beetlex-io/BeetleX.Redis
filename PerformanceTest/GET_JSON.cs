@@ -34,18 +34,18 @@ namespace PerformanceTest
 
 
     [System.ComponentModel.Category("Redis.Get")]
-    public class StackExchange_AsyncGet :StackExchangeBase
+    public class StackExchange_AsyncGet : StackExchangeBase
     {
         public async override Task Execute()
         {
             var i = OrderHelper.GetOrderID();
-            var data=  await RedisDB.StringGetAsync(i.ToString());
-            var item = Newtonsoft.Json.JsonConvert.DeserializeObject<Northwind.Data.Order>(data);
+            var data = await RedisDB.StringGetAsync(i.ToString());
+            var item = System.Text.Json.JsonSerializer.Deserialize<Northwind.Data.Order>(data);
         }
     }
 
     [System.ComponentModel.Category("Redis.MGet")]
-    public class StackExchange_AsyncMGet :StackExchangeBase
+    public class StackExchange_AsyncMGet : StackExchangeBase
     {
         public async override Task Execute()
         {
@@ -53,21 +53,21 @@ namespace PerformanceTest
             var values = await RedisDB.StringGetAsync(new RedisKey[] { i.ToString(), (i + 1).ToString() });
             object item1, item2;
             if (!values[0].IsNullOrEmpty)
-                item1 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[0], typeof(Northwind.Data.Order));
+                item1 = System.Text.Json.JsonSerializer.Deserialize<Northwind.Data.Order>(values[0]);
             if (!values[1].IsNullOrEmpty)
-                item2 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[1], typeof(Northwind.Data.Order));
+                item2 = System.Text.Json.JsonSerializer.Deserialize<Northwind.Data.Order>(values[1]);
         }
 
     }
 
     [System.ComponentModel.Category("Redis.Get")]
-    public class StackExchange_SyncGet :StackExchangeBase
+    public class StackExchange_SyncGet : StackExchangeBase
     {
         public override Task Execute()
         {
             var i = OrderHelper.GetOrderID();
             var data = RedisDB.StringGet(i.ToString());
-            var item = Newtonsoft.Json.JsonConvert.DeserializeObject<Northwind.Data.Order>(data);
+            var item = System.Text.Json.JsonSerializer.Deserialize<Northwind.Data.Order>(data);
             return base.Execute();
         }
     }
@@ -81,11 +81,65 @@ namespace PerformanceTest
             var values = RedisDB.StringGet(new RedisKey[] { i.ToString(), (i + 1).ToString() });
             object item1, item2;
             if (!values[0].IsNullOrEmpty)
-                item1 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[0], typeof(Northwind.Data.Order));
+                item1 = System.Text.Json.JsonSerializer.Deserialize<Northwind.Data.Order>(values[0]);
             if (!values[1].IsNullOrEmpty)
-                item2 = Newtonsoft.Json.JsonConvert.DeserializeObject(values[1], typeof(Northwind.Data.Order));
+                item2 = System.Text.Json.JsonSerializer.Deserialize<Northwind.Data.Order>(values[1]);
             return base.Execute();
         }
+    }
+
+
+    [System.ComponentModel.Category("Redis.Get")]
+    public class FreeRedis_Get : FreeRedisBase
+    {
+        public override Task Execute()
+        {
+            var i = OrderHelper.GetOrderID();
+            var data = cli.Get(i.ToString());
+            var item = System.Text.Json.JsonSerializer.Deserialize<Northwind.Data.Order>(data);
+            return base.Execute();
+        }
+    }
+
+    [System.ComponentModel.Category("Redis.MGet")]
+    public class FreeRedis_MGet : FreeRedisBase
+    {
+        public override Task Execute()
+        {
+            var i = OrderHelper.GetOrderID();
+            var values = cli.MGet(i.ToString(), (i + 1).ToString());
+            object item1, item2;
+            if (!string.IsNullOrEmpty(values[0]))
+                item1 = System.Text.Json.JsonSerializer.Deserialize<Northwind.Data.Order>(values[0]);
+            if (!string.IsNullOrEmpty(values[1]))
+                item2 = System.Text.Json.JsonSerializer.Deserialize<Northwind.Data.Order>(values[1]);
+            return base.Execute();
+        }
+
+    }
+
+
+    [System.ComponentModel.Category("Redis.Get")]
+    public class NewLife_Get : NewLifeRedisBase
+    {
+        public override Task Execute()
+        {
+            var i = OrderHelper.GetOrderID();
+            var data = cli.Get<Northwind.Data.Order>(i.ToString());
+            return base.Execute();
+        }
+    }
+
+    [System.ComponentModel.Category("Redis.MGet")]
+    public class NewLife_MGet : NewLifeRedisBase
+    {
+        public override Task Execute()
+        {
+            var i = OrderHelper.GetOrderID();
+            var values = cli.GetAll<Northwind.Data.Order>(new string[] { i.ToString(), (i + 1).ToString() });
+            return base.Execute();
+        }
+
     }
 
 }

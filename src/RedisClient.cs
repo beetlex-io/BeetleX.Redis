@@ -15,7 +15,7 @@ namespace BeetleX.Redis
             Host = host;
             if (ssl)
             {
-                
+
                 TcpClient = BeetleX.SocketFactory.CreateSslClient<AsyncTcpClient>(host, port, "beetlex");
                 TcpClient.CertificateValidationCallback = (o, e, f, d) =>
                 {
@@ -100,11 +100,7 @@ namespace BeetleX.Redis
                     length -= len;
                 }
                 Memory.Position = 0;
-                //JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
-                //object result = jsonSerializer.Deserialize(StreamReader, type);
-                //return result;
-                var task = SpanJson.JsonSerializer.NonGeneric.Utf8.DeserializeAsync(Memory, type).AsTask();
-                task.Wait();
+                var task = System.Text.Json.JsonSerializer.DeserializeAsync(Memory, type);
                 return task.Result;
 
             }
@@ -119,21 +115,8 @@ namespace BeetleX.Redis
 
         public ArraySegment<byte> SerializeJsonObject(Object data)
         {
-            var task = SpanJson.JsonSerializer.NonGeneric.Utf8.SerializeAsync(data, Memory).AsTask();
-            task.Wait();
+            System.Text.Json.JsonSerializer.SerializeAsync(Memory, data);
             return GetBuffer();
-            //try
-            //{
-            //    JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
-            //    jsonSerializer.Serialize(StreamWriter, data, data.GetType());
-            //    StreamWriter.Flush();
-            //    return GetBuffer();
-            //}
-            //catch (Exception e_)
-            //{
-            //    InitStream();
-            //    throw new RedisException($"json serialize error {e_.Message}", e_);
-            //}
         }
 
         public object DeserializeProtobufObject(System.IO.Stream stream, int length, Type type)
