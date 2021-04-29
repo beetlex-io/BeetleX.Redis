@@ -66,6 +66,23 @@ namespace BeetleX.Redis.XUnitTest
             Write(get);
             get = await table.Get<string>("field2");
             Write(get);
+
+            var emptyResult = await table.Set("fieldEmpty", "");
+            Write(emptyResult);
+
+            var emptyValue = await table.Get<string>("fieldEmpty");
+            Write(emptyValue);
+            Assert.Equal<string>(emptyValue, "");
+
+
+            var nullResult = await table.Set("fieldNull", null);
+            Write(nullResult);
+
+            var nullValue = await table.Get<string>("fieldNull");
+            Write(nullValue);
+            Assert.Equal<string>(nullValue, "");
+
+
         }
         [Fact]
         public async void HIncrby()

@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,7 +18,7 @@ namespace BeetleX.Redis.XUnitTest
             this.Console = output;
             //DB.Host.AddWriteHost("192.168.2.19", 6378, true);
             DB.Host.AddWriteHost("192.168.2.19", 6379);
-           
+
         }
 
         private RedisDB DB = new RedisDB(0);
@@ -37,9 +41,9 @@ namespace BeetleX.Redis.XUnitTest
         [Fact]
         public async void DBDisposed()
         {
-            using(RedisDB db = new RedisDB())
+            using (RedisDB db = new RedisDB())
             {
-                db.Host.AddWriteHost("127.0.0.1");
+                db.Host.AddWriteHost("10.0.20.6");
                 await db.Ping();
             }
         }
@@ -73,7 +77,7 @@ namespace BeetleX.Redis.XUnitTest
             var data = Encoding.UTF8.GetBytes("henryfan@msn.com");
             await DB.Set("bytes", new ArraySegment<byte>(data));
             var result = await DB.Get<ArraySegment<byte>>("bytes");
-            Assert.Equal<string>(Encoding.UTF8.GetString(result.Array,0,result.Count), "henryfan@msn.com");
+            Assert.Equal<string>(Encoding.UTF8.GetString(result.Array, 0, result.Count), "henryfan@msn.com");
         }
 
         [Fact]
@@ -85,6 +89,22 @@ namespace BeetleX.Redis.XUnitTest
             var value = await DB.Get<string>("test");
             Write(value);
             Assert.Equal<string>(value, "henryfan1");
+
+            var emptyResult = await DB.Set("test", "");
+            Write(emptyResult);
+
+            var emptyValue = await DB.Get<string>("test");
+            Write(emptyValue);
+            Assert.Equal<string>(emptyValue, "");
+
+
+            var nullResult = await DB.Set("test", null);
+            Write(nullResult);
+
+            var nullValue = await DB.Get<string>("test");
+            Write(nullValue);
+            Assert.Equal<string>(nullValue, "");
+
         }
 
         [Fact]
@@ -161,7 +181,7 @@ namespace BeetleX.Redis.XUnitTest
         public async void Keys()
         {
             await DB.Flushall();
-            var mset = await DB.MSet(("one", 1),("tow", 2),("three", 2),("four", 4));
+            var mset = await DB.MSet(("one", 1), ("tow", 2), ("three", 2), ("four", 4));
             Write(mset);
             var keys = await DB.Keys("*o*");
             Write(keys);
@@ -482,9 +502,9 @@ namespace BeetleX.Redis.XUnitTest
         public async void MSetNX()
         {
             await DB.Flushall();
-            var msetnx = await DB.MSetNX(("key1", "hello"),("key2", "there"));
+            var msetnx = await DB.MSetNX(("key1", "hello"), ("key2", "there"));
             Write(msetnx);
-            msetnx = await DB.MSetNX(("key3", "world"),("key2", "there"));
+            msetnx = await DB.MSetNX(("key3", "world"), ("key2", "there"));
             Write(msetnx);
             var mget = await DB.MGet<string, string, string>("key1", "key2", "key3");
             Write(mget.Item1);
@@ -568,6 +588,58 @@ namespace BeetleX.Redis.XUnitTest
         public async void Publish()
         {
             Write(await DB.Publish("channel", DateTime.Now));
+        }
+
+        private RedisDB CreateDB(int db, string host, int port)
+        {
+            var redisDb = new RedisDB(db);
+            redisDb.Host.AddWriteHost(host, port);
+            return redisDb;
+        }
+
+        private IEnumerable<RedisDB> CreateMultiDB(string host, int port)
+        {
+            for (int db = 0; db < 12; db++)
+            {
+                yield return CreateDB(db, host, port);
+            }
+        }
+
+
+        [Fact]
+        public async void MultiDBInit()
+        {
+            var redisDbs = CreateMultiDB("192.168.2.19", 6379).ToList();
+
+            var db = redisDbs[0]; //any one
+
+            ConcurrentBag<long?> results = new ConcurrentBag<long?>();
+            ConcurrentBag<Exception> exs = new ConcurrentBag<Exception>();
+            var parallelResult = Parallel.For(1, 100, async i =>
+              {
+                  long? result = null;
+                  try
+                  {
+                      result = await db.Exists("anykey");
+                  }
+                  //throw
+                  //connect xxxxxx@6379 timeout! task status:WaitingToRun
+                  catch (Exception ex)
+                  {
+                      exs.Add(ex);
+                  }
+                  finally
+                  {
+                      results.Add(result);
+                  }
+              });
+
+            while (results.Count != 99)
+            {
+                await Task.Delay(1000);
+            }
+            Assert.True(exs.Count == 0, exs.ToArray()[0].Message);
+
         }
     }
 }
