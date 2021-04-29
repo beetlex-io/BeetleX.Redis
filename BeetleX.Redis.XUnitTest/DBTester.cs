@@ -43,7 +43,7 @@ namespace BeetleX.Redis.XUnitTest
         {
             using (RedisDB db = new RedisDB())
             {
-                db.Host.AddWriteHost("10.0.20.6");
+                db.Host.AddWriteHost("192.168.2.19");
                 await db.Ping();
             }
         }
