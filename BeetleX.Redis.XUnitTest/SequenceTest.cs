@@ -50,6 +50,10 @@ namespace BeetleX.Redis.XUnitTest
             var count = await sequeue.ZAdd((4.14, "bca"));
             var value = await sequeue.ZScore("bca");
             Assert.Equal<double>(value, 4.14);
+
+            var unknownMemberValue = await sequeue.ZScore("unknownseq");
+            Assert.Equal<double?>(unknownMemberValue, null);
+
         }
         [Fact]
         public async void ZINCRBY()
@@ -157,6 +161,10 @@ namespace BeetleX.Redis.XUnitTest
             await sequeue.ZAdd((100, "A1"), (200, "A2"), (300, "A3"), (400, "A4"));
             var value = await sequeue.ZRank("A4");
             Assert.Equal<long>(value, 3);
+
+
+            var unknownMemberValue = await sequeue.ZRank("unknownseq");
+            Assert.Equal<long?>(unknownMemberValue, null);
         }
         [Fact]
         public async void ZREVRANK()
