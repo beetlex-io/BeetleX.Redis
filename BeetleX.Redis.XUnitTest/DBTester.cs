@@ -163,7 +163,7 @@ namespace BeetleX.Redis.XUnitTest
             await DB.Flushall();
             var mset = await DB.MSet(("one", 1),("tow", 2),("three", 2),("four", 4));
             Write(mset);
-            var keys = await DB.Keys("*o*");
+            var keys = await DB.Keys("*");
             Write(keys);
             keys = await DB.Keys("t??");
             Write(keys);

@@ -41,6 +41,8 @@ namespace PerformanceTest
             var i = OrderHelper.GetOrderID();
             var data = await RedisDB.StringGetAsync(i.ToString());
             var item = System.Text.Json.JsonSerializer.Deserialize<Northwind.Data.Order>(data);
+            if (item.OrderID != i)
+                throw new Exception("aaaa");
         }
     }
 
