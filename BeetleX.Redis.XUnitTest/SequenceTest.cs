@@ -13,7 +13,7 @@ namespace BeetleX.Redis.XUnitTest
         public SequenceTest(ITestOutputHelper output)
         {
             this.Console = output;
-            DB.Host.AddWriteHost("192.168.2.19");
+            DB.Host.AddWriteHost("localhost");
         }
 
         private RedisDB DB = new RedisDB(0);
@@ -38,7 +38,8 @@ namespace BeetleX.Redis.XUnitTest
         {
             await DB.Del("seq2");
             var sequeue = DB.CreateSequence("seq2");
-            var count = await sequeue.ZAdd((1, Guid.NewGuid().ToString("N")), (2, Guid.NewGuid().ToString("N")));
+            var count = await sequeue.ZAdd((123.1231, "123"), (123.1231, "234"));
+            var value = await sequeue.ZRange(0, -1,true);
             Assert.Equal<long>(count, 2);
             Write(count);
         }

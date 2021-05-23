@@ -40,11 +40,11 @@ namespace BeetleX.Redis
             }
         }
 
-        public void Send(Command cmd)
+        public void Send(RedisDB db, Command cmd)
         {
             PipeStream stream = TcpClient.Stream.ToPipeStream();
 
-            cmd.Execute(this, stream);
+            cmd.Execute(db,this, stream);
 
             TcpClient.Stream.Flush();
         }

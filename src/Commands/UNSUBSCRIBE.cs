@@ -22,7 +22,7 @@ namespace BeetleX.Redis.Commands
             base.OnExecute();
             if (Changes != null)
                 for (int i = 0; i < Changes.Length; i++)
-                    AddText(Changes[i]);
+                    OnWriteKey(Changes[i]);
         }
     }
 }

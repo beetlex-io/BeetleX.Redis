@@ -25,7 +25,7 @@ namespace BeetleX.Redis.Commands
         public override void OnExecute()
         {
             base.OnExecute();
-            AddText(Channel);
+            OnWriteKey(Channel);
             AddData(Message);
         }
     }

@@ -17,7 +17,12 @@ namespace BeetleX.Redis.XUnitTest
         {
             this.Console = output;
             //DB.Host.AddWriteHost("192.168.2.19", 6378, true);
+<<<<<<< HEAD
             DB.Host.AddWriteHost("192.168.2.19", 6379);
+=======
+            DB.Host.AddWriteHost("127.0.0.1");
+            DB.KeyPrefix = "bbq";
+>>>>>>> KeyPrefix
 
         }
 
@@ -183,7 +188,7 @@ namespace BeetleX.Redis.XUnitTest
             await DB.Flushall();
             var mset = await DB.MSet(("one", 1), ("tow", 2), ("three", 2), ("four", 4));
             Write(mset);
-            var keys = await DB.Keys("*o*");
+            var keys = await DB.Keys("*");
             Write(keys);
             keys = await DB.Keys("t??");
             Write(keys);

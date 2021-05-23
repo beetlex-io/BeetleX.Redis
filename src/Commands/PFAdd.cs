@@ -23,7 +23,7 @@ namespace BeetleX.Redis.Commands
         public override void OnExecute()
         {
             base.OnExecute();
-            AddText(Key);
+            OnWriteKey(Key);
             foreach (var item in Items)
                 AddText(item);
         }

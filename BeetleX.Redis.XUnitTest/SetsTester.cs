@@ -16,34 +16,11 @@ namespace BeetleX.Redis.XUnitTest
             this.Console = output;
             DefaultRedis.Instance.Host.AddWriteHost("localhost");
             DefaultRedis.Instance.DataFormater = new JsonFormater();
-            DB = DefaultRedis.Instance;
+            DB = DefaultRedis.Instance.Cloneable();
+            DB.KeyPrefix = "HENRY";
         }
 
         private RedisDB DB;
-
-        public DataHelper Data => DataHelper.Defalut;
-
-
-        private Employee GetEmployee(int id)
-        {
-            return Data.Employees[id];
-        }
-
-        private Order GetOrder(int id)
-        {
-            return Data.Orders[id];
-        }
-
-        private OrderBase GetOrderBase(int id)
-        {
-            return Data.OrderBases[id];
-        }
-
-        private Customer GetCustomer(int id)
-        {
-            return Data.Customers[id];
-        }
-
 
         private void Write(object result)
         {

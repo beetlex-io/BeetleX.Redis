@@ -33,7 +33,7 @@ namespace BeetleX.Redis.Commands
             for (int i = 0; i < mValues.Count; i++)
             {
                 var item = mValues[i];
-                AddText(item.Item1);
+                OnWriteKey(item.Item1);
                 AddData(item.Item2);
             }
         }

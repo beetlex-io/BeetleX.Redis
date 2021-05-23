@@ -80,7 +80,7 @@ namespace BeetleX.Redis
         public RedisClient Create()
         {
             var client = new RedisClient(SSL, Host, Port);
-            var result = Connect(client);
+            var result = Connect(null, client);
             if (result.IsError)
             {
                 client.TcpClient.DisConnect();
@@ -91,7 +91,7 @@ namespace BeetleX.Redis
 
         public bool Available { get; set; }
 
-        public Result Connect(RedisClient client)
+        public Result Connect(RedisDB db, RedisClient client)
         {
             if (!client.TcpClient.IsConnected)
             {
@@ -103,7 +103,7 @@ namespace BeetleX.Redis
                     {
                         Commands.AUTH auth = new Commands.AUTH(Password);
                         RedisRequest request = new RedisRequest(null, client, auth, typeof(string));
-                        var task = request.Execute();
+                        var task = request.Execute(db);
                         task.Wait();
                         if (task.Result.ResultType == ResultType.DataError ||
                             task.Result.ResultType == ResultType.Error
@@ -113,7 +113,7 @@ namespace BeetleX.Redis
 
                     Commands.SELECT select = new Commands.SELECT(DB);
                     var req = new RedisRequest(null, client, select, typeof(string));
-                    var t = req.Execute();
+                    var t = req.Execute(db);
                     t.Wait();
                     return t.Result;
                 }
@@ -174,10 +174,10 @@ namespace BeetleX.Redis
 
                 try
                 {
-                    Connect(mPingClient);
+                    Connect(null, mPingClient);
                     Commands.PING ping = new Commands.PING(null);
                     var request = new RedisRequest(null, mPingClient, ping, typeof(string));
-                    var result = await request.Execute();
+                    var result = await request.Execute(null);
                 }
                 catch
                 {

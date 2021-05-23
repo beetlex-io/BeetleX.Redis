@@ -34,7 +34,7 @@ namespace BeetleX.Redis.Commands
         public override void OnExecute()
         {
             base.OnExecute();
-            AddText(Key);
+            OnWriteKey(Key);
             if (!string.IsNullOrEmpty(Max))
                 AddText(Max);
             if (!string.IsNullOrEmpty(Min))

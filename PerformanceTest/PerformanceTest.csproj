@@ -8,11 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="BeetleX.CodeBenchmark" Version="1.1.1" />
-    <PackageReference Include="BeetleX.Redis" Version="1.2.1" />
+    <PackageReference Include="BeetleX.Redis" Version="1.2.4" />
     <PackageReference Include="FreeRedis" Version="0.3.5" />
     <PackageReference Include="NewLife.Redis" Version="3.9.2021.407" />
     <PackageReference Include="Northwind.Data" Version="1.2.3" />
-    <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\henry\Downloads\StackExchange.Redis-main\StackExchange.Redis-main\src\StackExchange.Redis\StackExchange.Redis.csproj" />
   </ItemGroup>
 
   <ItemGroup>

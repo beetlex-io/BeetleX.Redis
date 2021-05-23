@@ -68,6 +68,8 @@ namespace BeetleX.Redis
 
         public int DB { get; set; }
 
+        public string KeyPrefix { get; set; }
+
         public Sets GetSets()
         {
             return new Sets(this);
@@ -161,7 +163,7 @@ namespace BeetleX.Redis
                 return new Result() { ResultType = ResultType.NetError, Messge = "exceeding maximum number of connections" };
             try
             {
-                var result = host.Connect(client);
+                var result = host.Connect(this,client);
                 if (result.IsError)
                 {
                     return result;
@@ -175,7 +177,7 @@ namespace BeetleX.Redis
                     cmd.Activity = tarck.Activity;
                     RedisRequest request = new RedisRequest(host, client, cmd, types);
                     request.Activity = tarck.Activity;
-                    result = await request.Execute();
+                    result = await request.Execute(this);
                     return result;
                 }
             }

@@ -21,7 +21,7 @@ namespace BeetleX.Redis.Commands
         {
             base.OnExecute();
             foreach (var item in Keys)
-                AddText(item);
+                OnWriteKey(item);
         }
     }
 }

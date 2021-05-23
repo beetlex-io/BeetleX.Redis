@@ -23,6 +23,8 @@ namespace BeetleX.Redis
 
         private static byte[] LineBytes;
 
+        internal string KeyPrefix { get; set; }
+
         public static List<byte[]> mMsgHeaderLenData = new List<byte[]>();
 
         public static byte[] GetMsgHeaderLengthData(int length)
@@ -92,8 +94,21 @@ namespace BeetleX.Redis
             mParameters.Add(new CommandParameter { ValueBuffer = cmdBuffer });
         }
 
-        public void Execute(RedisClient client, PipeStream stream)
+        protected virtual void OnWriteKey(string key)
         {
+            if (string.IsNullOrEmpty(KeyPrefix))
+            {
+                AddText(key);
+            }
+            else
+            {
+                AddText(KeyPrefix + ":" + key);
+            }
+        }
+
+        public void Execute(RedisDB db, RedisClient client, PipeStream stream)
+        {
+            KeyPrefix = db?.KeyPrefix;
             using (var track = CodeTrackFactory.Track("Write", CodeTrackLevel.Function, Activity?.Id, "Redis", "Protocol"))
             {
                 OnExecute();

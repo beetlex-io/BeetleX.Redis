@@ -49,7 +49,7 @@ namespace BeetleX.Redis.Commands
                 AddText(Block.Value);
             }
             AddText("STREAMS");
-            AddText(mStream);
+            OnWriteKey(mStream);
             AddText(ID);
         }
     }

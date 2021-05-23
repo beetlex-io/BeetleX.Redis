@@ -20,7 +20,7 @@ namespace BeetleX.Redis.Commands
         public override void OnExecute()
         {
             base.OnExecute();
-            AddText(mStream);
+            OnWriteKey(mStream);
         }
     }
 }
