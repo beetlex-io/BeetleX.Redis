@@ -102,7 +102,7 @@ namespace BeetleX.Redis
             }
             else
             {
-                AddText(KeyPrefix + key);
+                AddText(KeyPrefix + ":" + key);
             }
         }
 

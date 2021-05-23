@@ -13,8 +13,9 @@ namespace BeetleX.Redis.XUnitTest
         {
             this.Console = output;
             //DB.Host.AddWriteHost("192.168.2.19", 6378, true);
-            DB.Host.AddWriteHost("192.168.2.19", 6379);
-           
+            DB.Host.AddWriteHost("127.0.0.1");
+            DB.KeyPrefix = "bbq";
+
         }
 
         private RedisDB DB = new RedisDB(0);
@@ -37,7 +38,7 @@ namespace BeetleX.Redis.XUnitTest
         [Fact]
         public async void DBDisposed()
         {
-            using(RedisDB db = new RedisDB())
+            using (RedisDB db = new RedisDB())
             {
                 db.Host.AddWriteHost("127.0.0.1");
                 await db.Ping();
@@ -73,7 +74,7 @@ namespace BeetleX.Redis.XUnitTest
             var data = Encoding.UTF8.GetBytes("henryfan@msn.com");
             await DB.Set("bytes", new ArraySegment<byte>(data));
             var result = await DB.Get<ArraySegment<byte>>("bytes");
-            Assert.Equal<string>(Encoding.UTF8.GetString(result.Array,0,result.Count), "henryfan@msn.com");
+            Assert.Equal<string>(Encoding.UTF8.GetString(result.Array, 0, result.Count), "henryfan@msn.com");
         }
 
         [Fact]
@@ -161,7 +162,7 @@ namespace BeetleX.Redis.XUnitTest
         public async void Keys()
         {
             await DB.Flushall();
-            var mset = await DB.MSet(("one", 1),("tow", 2),("three", 2),("four", 4));
+            var mset = await DB.MSet(("one", 1), ("tow", 2), ("three", 2), ("four", 4));
             Write(mset);
             var keys = await DB.Keys("*");
             Write(keys);
@@ -482,9 +483,9 @@ namespace BeetleX.Redis.XUnitTest
         public async void MSetNX()
         {
             await DB.Flushall();
-            var msetnx = await DB.MSetNX(("key1", "hello"),("key2", "there"));
+            var msetnx = await DB.MSetNX(("key1", "hello"), ("key2", "there"));
             Write(msetnx);
-            msetnx = await DB.MSetNX(("key3", "world"),("key2", "there"));
+            msetnx = await DB.MSetNX(("key3", "world"), ("key2", "there"));
             Write(msetnx);
             var mget = await DB.MGet<string, string, string>("key1", "key2", "key3");
             Write(mget.Item1);

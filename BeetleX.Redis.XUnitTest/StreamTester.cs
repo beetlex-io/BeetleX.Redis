@@ -17,6 +17,7 @@ namespace BeetleX.Redis.XUnitTest
         {
             this.Console = output;
             DB.DataFormater = new JsonFormater();
+            DB.KeyPrefix = "henry";
             DB.Host.AddWriteHost("127.0.0.1");
         }
 
@@ -61,7 +62,7 @@ namespace BeetleX.Redis.XUnitTest
         {
             RedisStream<Employee> stream = DB.GetStream<Employee>("employees_stream");
             var items = await stream.Range();
-            items = await stream.Read(0);
+            items = await stream.Read(0, 1, "0");
             Write(items);
         }
         [Fact]
@@ -74,7 +75,7 @@ namespace BeetleX.Redis.XUnitTest
         [Fact]
         public async void XREADProperties()
         {
-            RedisStream<Dictionary<string,string>> stream = DB.GetStream<Dictionary<string, string>>("employees_stream");
+            RedisStream<Dictionary<string, string>> stream = DB.GetStream<Dictionary<string, string>>("employees_stream");
             var items = await stream.RangeAll();
             Write(items);
             items = await stream.RevRangeAll();

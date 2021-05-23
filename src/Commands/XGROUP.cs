@@ -54,7 +54,7 @@ namespace BeetleX.Redis.Commands
         {
             base.OnExecute();
             AddText("DESTROY");
-            AddText(mStream);
+            OnWriteKey(mStream);
             AddText(mGroup);
         }
     }
@@ -82,7 +82,7 @@ namespace BeetleX.Redis.Commands
         {
             base.OnExecute();
             AddText("SETID");
-            AddText(mStream);
+            OnWriteKey(mStream);
             AddText(mGroup);
             AddText(mID);
         }

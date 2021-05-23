@@ -12,6 +12,7 @@ namespace BeetleX.Redis.XUnitTest
         {
             this.Console = output;
             DB.Host.AddWriteHost("localhost");
+            DB.KeyPrefix = "KV";
         }
 
         private RedisDB DB = new RedisDB(0);
