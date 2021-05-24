@@ -16,14 +16,9 @@ namespace BeetleX.Redis.XUnitTest
         public DBTester(ITestOutputHelper output)
         {
             this.Console = output;
-            //DB.Host.AddWriteHost("192.168.2.19", 6378, true);
-<<<<<<< HEAD
-            DB.Host.AddWriteHost("192.168.2.19", 6379);
-=======
             DB.Host.AddWriteHost("127.0.0.1");
-            DB.KeyPrefix = "bbq";
->>>>>>> KeyPrefix
-
+            DB.KeyPrefix = "BeetleX";
+            DB.AutoPing = false;
         }
 
         private RedisDB DB = new RedisDB(0);
@@ -100,7 +95,7 @@ namespace BeetleX.Redis.XUnitTest
 
             var emptyValue = await DB.Get<string>("test");
             Write(emptyValue);
-            Assert.Equal<string>(emptyValue, "");
+            Assert.Equal<string>(emptyValue, null);
 
 
             var nullResult = await DB.Set("test", null);
@@ -108,7 +103,7 @@ namespace BeetleX.Redis.XUnitTest
 
             var nullValue = await DB.Get<string>("test");
             Write(nullValue);
-            Assert.Equal<string>(nullValue, "");
+            Assert.Equal<string>(nullValue, null);
 
         }
 

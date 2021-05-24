@@ -12,7 +12,7 @@ namespace BeetleX.Redis.XUnitTest
         {
             this.Console = output;
             DB.Host.AddWriteHost("localhost");
-            DB.KeyPrefix = "KV";
+            DB.KeyPrefix = "BeetleX";
         }
 
         private RedisDB DB = new RedisDB(0);
@@ -73,7 +73,7 @@ namespace BeetleX.Redis.XUnitTest
 
             var emptyValue = await table.Get<string>("fieldEmpty");
             Write(emptyValue);
-            Assert.Equal<string>(emptyValue, "");
+            Assert.Equal<string>(emptyValue, null);
 
 
             var nullResult = await table.Set("fieldNull", null);
@@ -81,7 +81,7 @@ namespace BeetleX.Redis.XUnitTest
 
             var nullValue = await table.Get<string>("fieldNull");
             Write(nullValue);
-            Assert.Equal<string>(nullValue, "");
+            Assert.Equal<string>(nullValue, null);
 
 
         }
@@ -134,9 +134,9 @@ namespace BeetleX.Redis.XUnitTest
         public async void HMGet()
         {
             await DB.Flushall();
-            var table = DB.CreateHashTable("myhash");
-            Write(await table.MSet(("field1", "hello"), ("field2", "world")));
-            var values = await table.Get<string, string, string>("field1", "field2", "nofield");
+var table = DB.CreateHashTable("myhash");
+Write(await table.MSet(("field1", "hello"), ("field2", "world")));
+var values = await table.Get<string, string, string>("field1", "field2", "nofield");
             Write(values.Item1);
             Write(values.Item2);
             Write(values.Item3);

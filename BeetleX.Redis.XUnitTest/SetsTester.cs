@@ -17,7 +17,7 @@ namespace BeetleX.Redis.XUnitTest
             DefaultRedis.Instance.Host.AddWriteHost("localhost");
             DefaultRedis.Instance.DataFormater = new JsonFormater();
             DB = DefaultRedis.Instance.Cloneable();
-            DB.KeyPrefix = "HENRY";
+            DB.KeyPrefix = "BeetleX";
         }
 
         private RedisDB DB;

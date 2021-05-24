@@ -14,6 +14,7 @@ namespace BeetleX.Redis.XUnitTest
         {
             this.Console = output;
             DB.Host.AddWriteHost("localhost");
+            DB.KeyPrefix = "BeetleX";
         }
 
         private RedisDB DB = new RedisDB(0);
@@ -50,7 +51,7 @@ namespace BeetleX.Redis.XUnitTest
             var sequeue = DB.CreateSequence("seq2");
             var count = await sequeue.ZAdd((4.14, "bca"));
             var value = await sequeue.ZScore("bca");
-            Assert.Equal<double>(value, 4.14);
+            Assert.Equal<double>(value.Value, 4.14);
 
             var unknownMemberValue = await sequeue.ZScore("unknownseq");
             Assert.Equal<double?>(unknownMemberValue, null);
@@ -64,10 +65,10 @@ namespace BeetleX.Redis.XUnitTest
             var sequeue = DB.CreateSequence("seq2");
             var count = await sequeue.ZAdd((4.14, member));
             var value = await sequeue.ZScore(member);
-            Assert.Equal<double>(value, 4.14);
+            Assert.Equal<double>(value.Value, 4.14);
             await sequeue.ZIncrby(5, member);
             value = await sequeue.ZScore(member);
-            Assert.Equal<double>(value, 9.14);
+            Assert.Equal<double>(value.Value, 9.14);
         }
         [Fact]
         public async void ZCARD()
@@ -161,7 +162,7 @@ namespace BeetleX.Redis.XUnitTest
             var sequeue = DB.CreateSequence("seq2");
             await sequeue.ZAdd((100, "A1"), (200, "A2"), (300, "A3"), (400, "A4"));
             var value = await sequeue.ZRank("A4");
-            Assert.Equal<long>(value, 3);
+            Assert.Equal<long>(value.Value, 3);
 
 
             var unknownMemberValue = await sequeue.ZRank("unknownseq");

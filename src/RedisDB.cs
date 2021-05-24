@@ -90,6 +90,7 @@ namespace BeetleX.Redis
         public RedisDB Cloneable(IDataFormater dataFormater = null)
         {
             var result = new RedisDB(this.DB, dataFormater, this);
+            result.KeyPrefix = this.KeyPrefix;
             return result;
         }
 
@@ -163,7 +164,7 @@ namespace BeetleX.Redis
                 return new Result() { ResultType = ResultType.NetError, Messge = "exceeding maximum number of connections" };
             try
             {
-                var result = host.Connect(this,client);
+                var result = host.Connect(this, client);
                 if (result.IsError)
                 {
                     return result;
@@ -661,7 +662,7 @@ namespace BeetleX.Redis
                 throw new RedisException(result.Messge);
         }
 
-     
+
 
 
         public async ValueTask<InfoResult> Info(InfoSection? section = null)

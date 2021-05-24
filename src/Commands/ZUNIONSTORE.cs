@@ -37,7 +37,7 @@ namespace BeetleX.Redis.Commands
             AddText(Items.Length);
             foreach (var item in Items)
             {
-                AddText(item.key);
+                OnWriteKey(item.key);
             }
             AddText("WEIGHTS");
             foreach (var item in Items)

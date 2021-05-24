@@ -28,12 +28,14 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
-        public async ValueTask<double> ZScore(string member)
+        public async ValueTask<double?> ZScore(string member)
         {
             ZSCORE cmd = new ZSCORE(Key, member);
             var result = await DB.Execute(cmd, typeof(string));
             if (result.IsError)
                 throw new RedisException(result.Messge);
+            if (result.Value == null)
+                return null;
             return System.Convert.ToDouble(result.Value);
         }
 
@@ -114,12 +116,14 @@ namespace BeetleX.Redis
             return GetItems(result, withscores);
         }
 
-        public async ValueTask<long> ZRank(string member)
+        public async ValueTask<long?> ZRank(string member)
         {
             ZRANK cmd = new ZRANK(Key, member);
             var result = await DB.Execute(cmd, typeof(string));
             if (result.IsError)
                 throw new RedisException(result.Messge);
+            if (result.Value == null)
+                return null;
             return System.Convert.ToInt64(result.Value);
         }
 
@@ -211,7 +215,7 @@ namespace BeetleX.Redis
             return ZUnionsStore(items);
         }
 
-        public  ValueTask<long> ZUnionsStore(params (string key, double weight)[] items)
+        public ValueTask<long> ZUnionsStore(params (string key, double weight)[] items)
         {
             return ZUnionsStore(items, ZUNIONSTORE.AggregateType.SUM);
         }

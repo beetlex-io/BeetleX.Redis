@@ -29,6 +29,8 @@ namespace BeetleX.Redis
 
         public static byte[] GetMsgHeaderLengthData(int length)
         {
+            if (length <= 0)
+                return null;
             if (length > MAX_LENGTH_TABLE)
                 return null;
             return mMsgHeaderLenData[length - 1];
@@ -38,6 +40,8 @@ namespace BeetleX.Redis
 
         public static byte[] GetBodyHeaderLenData(int length)
         {
+            if (length <= 0)
+                return null;
             if (length > MAX_LENGTH_TABLE)
                 return null;
             return mBodyHeaderLenData[length - 1];

@@ -31,6 +31,8 @@ namespace BeetleX.Redis.Commands
         {
             base.OnExecute();
             OnWriteKey(Key);
+            if (Data == null)
+                Data = string.Empty;
             AddData(Data);
             if (TimeOut > 0)
             {

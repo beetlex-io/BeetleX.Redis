@@ -2,7 +2,7 @@
 
   <PropertyGroup>    
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
-    <Version>1.2.4</Version>
+    <Version>1.3.1</Version>
     <Company>beetlex.io</Company>
     <Authors>henryfan</Authors>
     <Copyright>Copyright © beetlex.io 2019-2021</Copyright>
@@ -17,11 +17,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BeetleX" Version="1.6.5.41" />
+    <PackageReference Include="BeetleX" Version="1.6.5.62" />
     <PackageReference Include="BeetleX.Tracks" Version="0.7.5" />
     <PackageReference Include="MessagePack" Version="2.1.115" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="protobuf-net" Version="2.4.6" />
+    <PackageReference Include="protobuf-net" Version="3.0.101" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 

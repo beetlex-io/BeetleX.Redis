@@ -29,6 +29,8 @@ namespace BeetleX.Redis.Commands
             base.OnExecute();
             OnWriteKey(Key);
             AddText(Field);
+            if (Value == null)
+                Value = string.Empty;
             AddData(Value);
         }
 
