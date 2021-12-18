@@ -10,6 +10,7 @@ namespace PerformanceTest
 
         static void Main(string[] args)
         {
+            BeetleX.Buffers.BufferPool.POOL_MAX_SIZE = 1024 * 1024;
             Benchmark benchmark = new Benchmark();
             benchmark.Register(typeof(Program).Assembly);
             benchmark.Start();

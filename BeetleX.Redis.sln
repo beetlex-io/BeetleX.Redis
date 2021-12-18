@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeetleX.Redis.Samples", "Be
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeetleX.Redis.XUnitTest", "BeetleX.Redis.XUnitTest\BeetleX.Redis.XUnitTest.csproj", "{B805DA42-087A-4884-9EB1-062771C62026}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackExchange.Redis", "C:\Users\henry\Downloads\StackExchange.Redis-main\StackExchange.Redis-main\src\StackExchange.Redis\StackExchange.Redis.csproj", "{9D6EF164-37F3-4674-8B04-3D411A4C9568}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{B805DA42-087A-4884-9EB1-062771C62026}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B805DA42-087A-4884-9EB1-062771C62026}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B805DA42-087A-4884-9EB1-062771C62026}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9D6EF164-37F3-4674-8B04-3D411A4C9568}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9D6EF164-37F3-4674-8B04-3D411A4C9568}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9D6EF164-37F3-4674-8B04-3D411A4C9568}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9D6EF164-37F3-4674-8B04-3D411A4C9568}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

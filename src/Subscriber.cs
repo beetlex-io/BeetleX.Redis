@@ -194,7 +194,7 @@ namespace BeetleX.Redis
                 }
                 else
                 {
-                    redisClient = host.Create();
+                    redisClient = await host.Create();
                     mCommand = new Commands.SUBSCRIBE(mDB.DataFormater, mChannels.Keys.ToArray());
                     mCommand.Reader = OnBlockingRead;
                     subscribeRequest = new SubscribeRequest(host, redisClient, mCommand, typeof(string));

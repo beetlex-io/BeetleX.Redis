@@ -77,10 +77,10 @@ namespace BeetleX.Redis
             }
         }
 
-        public RedisClient Create()
+        public async Task<RedisClient> Create()
         {
             var client = new RedisClient(SSL, Host, Port);
-            var result = Connect(null, client);
+            var result = await Connect(null, client);
             if (result.IsError)
             {
                 client.TcpClient.DisConnect();
@@ -91,24 +91,24 @@ namespace BeetleX.Redis
 
         public bool Available { get; set; }
 
-        public Result Connect(RedisDB db, RedisClient client)
+        public async Task<Result> Connect(RedisDB db, RedisClient client)
         {
             if (!client.TcpClient.IsConnected)
             {
-                bool isNew;
-                if (client.TcpClient.Connect(out isNew))
+                var connStatus = await client.TcpClient.Connect();
+
+                if (connStatus.Connected)
                 {
                     this.Available = true;
                     if (!string.IsNullOrEmpty(Password))
                     {
                         Commands.AUTH auth = new Commands.AUTH(Password);
                         RedisRequest request = new RedisRequest(null, client, auth, typeof(string));
-                        var task = request.Execute(db);
-                        task.Wait();
-                        if (task.Result.ResultType == ResultType.DataError ||
-                            task.Result.ResultType == ResultType.Error
-                            || task.Result.ResultType == ResultType.NetError)
-                            return task.Result;
+                        var result = await request.Execute(db);
+                        if (result.ResultType == ResultType.DataError ||
+                            result.ResultType == ResultType.Error
+                            || result.ResultType == ResultType.NetError)
+                            return result;
                     }
 
                     Commands.SELECT select = new Commands.SELECT(DB);

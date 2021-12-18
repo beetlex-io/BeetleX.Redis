@@ -13,9 +13,11 @@ namespace BeetleX.Redis.Commands
             this.DataFormater = formater;
         }
 
-        public int TimeOut { get; set; }
+        public int ExTime { get; set; }
 
-        public ExpireTimeType ExpireTimeType { get; set; } = ExpireTimeType.EX;
+        public int PXTime { get; set; }
+
+        public int EXATTime { get; set; }
 
         public override string Name => "SET";
 
@@ -34,10 +36,20 @@ namespace BeetleX.Redis.Commands
             if (Data == null)
                 Data = string.Empty;
             AddData(Data);
-            if (TimeOut > 0)
+            if (ExTime > 0)
             {
-                AddText(ExpireTimeType);
-                AddText(TimeOut);
+                AddText("EX");
+                AddText(ExTime);
+            }
+            if (PXTime > 0)
+            {
+                AddText("PX");
+                AddText(PXTime);
+            }
+            if (EXATTime > 0)
+            {
+                AddText("EXAT");
+                AddText(EXATTime);
             }
             if (NX != null)
             {

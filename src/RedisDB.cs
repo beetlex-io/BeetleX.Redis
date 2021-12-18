@@ -164,7 +164,7 @@ namespace BeetleX.Redis
                 return new Result() { ResultType = ResultType.NetError, Messge = "exceeding maximum number of connections" };
             try
             {
-                var result = host.Connect(this, client);
+                var result = await host.Connect(this, client);
                 if (result.IsError)
                 {
                     return result;
@@ -222,18 +222,17 @@ namespace BeetleX.Redis
         }
 
 
-        public async ValueTask<string> Set(string key, object value, int? seconds)
+        public async ValueTask<string> Set(string key, object value, int? extime)
         {
-            return await Set(key, value, seconds, null);
+            return await Set(key, value, extime, null);
         }
 
-        public async ValueTask<string> Set(string key, object value, int? seconds, bool? nx)
+        public async ValueTask<string> Set(string key, object value, int? extime, bool? nx)
         {
             Commands.SET set = new Commands.SET(key, value, DataFormater);
-            if (seconds != null)
+            if (extime != null)
             {
-                set.ExpireTimeType = ExpireTimeType.EX;
-                set.TimeOut = seconds.Value;
+                set.ExTime = extime.Value;
             }
             set.NX = nx;
             var result = await Execute(set, typeof(string));
