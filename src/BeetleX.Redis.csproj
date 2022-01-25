@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
-    <Version>1.3.6</Version>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+    <Version>1.4.1.180</Version>
     <Company>beetlex.io</Company>
     <Authors>henryfan</Authors>
-    <Copyright>Copyright © beetlex.io 2019-2021</Copyright>
+    <Copyright>Copyright © beetlex.io 2019-2022</Copyright>
     <Description>A high-performance async/non-blocking  redis client components for dotnet core,default support json and protobuf data format</Description>
     <PackageLicenseUrl>https://github.com/IKende/BeetleX.Redis/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/IKende/BeetleX.Redis</PackageProjectUrl>
@@ -17,8 +17,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BeetleX" Version="1.6.7.6" />
-    <PackageReference Include="BeetleX.Tracks" Version="0.7.5" />
+    <PackageReference Include="BeetleX" Version="1.8.0" />
+    <PackageReference Include="BeetleX.Tracks" Version="0.8.0" />
     <PackageReference Include="MessagePack" Version="2.1.115" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="protobuf-net" Version="3.0.101" />
@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\beetlex200.png">
+    <None Include="..\..\..\beetlex200.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

@@ -197,7 +197,7 @@ namespace BeetleX.Redis
 
         private void LoadArray(PipeStream pipeStream)
         {
-        START:
+            START:
             if (Result.ArrayCount == -1 || Result.ArrayCount == 0)
             {
                 OnCompleted(ResultType.Arrays, null);
@@ -271,12 +271,24 @@ namespace BeetleX.Redis
                     }
                     else if (pipeStream.Length >= Result.BodyLength)
                     {
-                        object value;
+                        object value = null;
                         if (Command.Reader == null || Command.Reader(Result, pipeStream, Client))
                         {
                             if (Command.DataFormater == null)
                             {
-                                value = pipeStream.ReadString(Result.BodyLength.Value);
+
+                                Type type = Types[Result.Data.Count % Types.Length];
+                                if (type == typeof(ArraySegment<byte>))
+                                {
+                                    var bytes = System.Buffers.ArrayPool<byte>.Shared.Rent(Result.BodyLength.Value);
+                                    pipeStream.Read(bytes, 0, Result.BodyLength.Value);
+                                    value = new ArraySegment<byte>(bytes, 0, Result.BodyLength.Value);
+                                }
+                                else
+                                {
+                                    value = pipeStream.ReadString(Result.BodyLength.Value);
+                                    value = Convert.ChangeType(value, type);
+                                }
                             }
                             else
                             {
@@ -324,7 +336,7 @@ namespace BeetleX.Redis
         {
             try
             {
-                Client.Send(db,cmd);
+                Client.Send(db, cmd);
                 if (!Client.TcpClient.IsConnected)
                 {
                     OnCompleted(ResultType.NetError, "Connection is closed!");
@@ -340,7 +352,7 @@ namespace BeetleX.Redis
         {
 
             TaskCompletionSource = new TaskCompletionSource<Result>();
-            SendCommmand(db,Command);
+            SendCommmand(db, Command);
             return TaskCompletionSource.Task;
 
         }

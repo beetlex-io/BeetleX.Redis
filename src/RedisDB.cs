@@ -322,13 +322,20 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
+        private T ChangeValue<T>(object data)
+        {
+            if (data == null && typeof(T).IsValueType)
+                return default(T);
+            return (T)data;
+        }
+
         public async ValueTask<T> Get<T>(string key)
         {
             Commands.GET cmd = new Commands.GET(key, DataFormater);
             var result = await Execute(cmd, typeof(T));
             if (result.IsError)
                 throw new RedisException(result.Messge);
-            return (T)result.Value;
+            return ChangeValue<T>(result.Value);
         }
 
         public async ValueTask<string[]> Keys(string pattern)
