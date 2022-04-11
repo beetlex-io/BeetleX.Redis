@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
-    <Version>1.4.1.180</Version>
+    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+    <Version>1.4.3.1803</Version>
     <Company>beetlex.io</Company>
     <Authors>henryfan</Authors>
     <Copyright>Copyright © beetlex.io 2019-2022</Copyright>
     <Description>A high-performance async/non-blocking  redis client components for dotnet core,default support json and protobuf data format</Description>
-    <PackageLicenseUrl>https://github.com/IKende/BeetleX.Redis/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/IKende/BeetleX.Redis</PackageProjectUrl>
     <PackageIconUrl></PackageIconUrl>
     <SignAssembly>false</SignAssembly>
@@ -17,12 +17,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BeetleX" Version="1.8.0" />
+    <PackageReference Include="BeetleX" Version="1.8.0.3" />
     <PackageReference Include="BeetleX.Tracks" Version="0.8.0" />
     <PackageReference Include="MessagePack" Version="2.1.115" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="protobuf-net" Version="3.0.101" />
-    <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>

@@ -322,7 +322,7 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
-        private T ChangeValue<T>(object data)
+        public static T ChangeValue<T>(object data)
         {
             if (data == null && typeof(T).IsValueType)
                 return default(T);

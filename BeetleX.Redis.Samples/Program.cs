@@ -12,19 +12,24 @@ namespace BeetleX.Redis.Samples
             CodeTrackFactory.Level = CodeTrackLevel.Code;
             DefaultRedis.Instance.DataFormater = new JsonFormater();
             DefaultRedis.Instance.Host.AddWriteHost("127.0.0.1");
+            await DefaultRedis.Set("emp3", GetEmployee(3));
+            var data = await DefaultRedis.Instance.Cloneable(null).Get<ArraySegment<byte>>("emp3");
+            string value = System.Text.Encoding.UTF8.GetString(data.Array, 0, data.Count);
+            Console.WriteLine(value);
+
             var subscribe = DefaultRedis.Subscribe();
             subscribe.Register<Employee>("employees", e =>
             {
                 Console.WriteLine($"Receive employee {e.FirstName} {e.LastName}");
             });
-            subscribe.Listen();
-            System.Threading.Thread.Sleep(1000);
-            using (CodeTrackFactory.TrackReport("Test", CodeTrackLevel.Bussiness, null))
-            {
-                await Test();
-            }
-            Console.WriteLine(CodeTrackFactory.Activity?.GetReport());
-            Console.Read();
+            //subscribe.Listen();
+            //System.Threading.Thread.Sleep(1000);
+            //using (CodeTrackFactory.TrackReport("Test", CodeTrackLevel.Bussiness, null))
+            //{
+            //    await Test();
+            //}
+            //Console.WriteLine(CodeTrackFactory.Activity?.GetReport());
+            //Console.Read();
         }
 
         static async Task Test()

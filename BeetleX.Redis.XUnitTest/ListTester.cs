@@ -70,6 +70,14 @@ namespace BeetleX.Redis.XUnitTest
 
         }
         [Fact]
+        public async void ValueTypePopNull()
+        {
+            await DB.Flushall();
+            var list = DB.CreateList<long>("longlist");
+            var data = await list.Pop();
+            Assert.Equal(0,data);
+        }
+        [Fact]
         public async void LInsert()
         {
             await DB.Flushall();
