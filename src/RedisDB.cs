@@ -511,7 +511,7 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
-        public async ValueTask<long> Incrby(string key, int increment)
+        public async ValueTask<long> Incrby(string key, long increment)
         {
             Commands.INCRBY cmd = new Commands.INCRBY(key, increment);
             var result = await Execute(cmd, typeof(string));

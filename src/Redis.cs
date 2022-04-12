@@ -47,7 +47,7 @@ namespace BeetleX.Redis
             return await Instance.IncrbyFloat(key, increment);
         }
 
-        public static async ValueTask<long> Incrby(string key, int increment)
+        public static async ValueTask<long> Incrby(string key, long increment)
         {
             return await Instance.Incrby(key, increment);
 

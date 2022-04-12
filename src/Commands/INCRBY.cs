@@ -6,7 +6,7 @@ namespace BeetleX.Redis.Commands
 {
     public class INCRBY : Command
     {
-        public INCRBY(string key, int value)
+        public INCRBY(string key, long value)
         {
             Key = key;
             Value = value;
@@ -14,7 +14,7 @@ namespace BeetleX.Redis.Commands
 
         public string Key { get; set; }
 
-        public int Value { get; set; }
+        public long Value { get; set; }
 
         public override bool Read => false;
 
