@@ -135,14 +135,14 @@ A high-performance async/non-blocking  redis client components for dotnet core,d
 ## nuget
 https://www.nuget.org/packages/BeetleX.Redis/
 
-## Setting
+## Default instance setting
 ``` csharp
-Redis.Default.DataFormater = new JsonFormater();
-Redis.Default.Host.AddWriteHost("localhost");
+DefaultRedis.Instance.DataFormater = new JsonFormater();
+DefaultRedis.Instance.Host.AddWriteHost("localhost");
 //ssl
-Redis.Default.Host.AddWriteHost("localhost",6378,true);
+DefaultRedis.Instance.Host.AddWriteHost("localhost",6378,true);
 //password 
-Redis.Default.Host.AddWriteHost("localhost").Password="123456"
+DefaultRedis.Instance.Host.AddWriteHost("localhost").Password="123456"
 ```
 ## Create db
 ``` csharp
@@ -157,18 +157,18 @@ DB.Host.AddWriteHost("localhost").Password="123456"
 
 ## SET/SET
 ``` csharp
-await Redis.Get<Employee>("nonexisting");
-await Redis.Set("emp3", GetEmployee(3));
-await Redis.Get<Employee>("emp3");
+await DefaultRedis.Get<Employee>("nonexisting");
+await DefaultRedis.Set("emp3", GetEmployee(3));
+await DefaultRedis.Get<Employee>("emp3");
 ```
 ## MSET/MGET
 ``` csharp
-await Redis.Set(("field1", GetEmployee(1)), ("field2", GetEmployee(2)));
-await Redis.Get<Employee, Order, Customer>("emp1", "order1", "customer1");
+await DefaultRedis.Set(("field1", GetEmployee(1)), ("field2", GetEmployee(2)));
+await DefaultRedis.Get<Employee, Order, Customer>("emp1", "order1", "customer1");
 ```
 ## List
 ``` csharp
-var list = Redis.CreateList<Employee>("employees");
+var list = DefaultRedis.CreateList<Employee>("employees");
 await list.Push(GetEmployee(1));
 await list.Insert(true, GetEmployee(2), GetEmployee(3));
 await list.Range(0, -1);
@@ -182,7 +182,7 @@ var items = await sequeue.ZRange(0, -1, true);
 ```
 ## Hash
 ``` csharp
-var table = Redis.CreateHashTable("myhash");
+var table = DefaultRedis.CreateHashTable("myhash");
 await table.MSet(("field1", GetEmployee(1)), ("field2", GetEmployee(2)));
 await table.Get<Employee, Employee>("field1", "field2");
 await table.Del("emp2");
@@ -215,7 +215,7 @@ await table.Keys();
 
 ## Subscribe
 ``` csharp
-var subscribe = Redis.Subscribe();
+var subscribe = DefaultRedis.Subscribe();
 subscribe.Register<Employee>("employees");
 subscribe.Receive = (o, e) =>
 {
