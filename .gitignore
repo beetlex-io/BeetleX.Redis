@@ -357,3 +357,13 @@ MigrationBackup/
 .ionide/
 
 .idea/
+输出-生成.txt
+BeetleX.Redis.XUnitTest/DBTester_BACKUP_37104.cs
+BeetleX.Redis.XUnitTest/DBTester_BASE_37104.cs
+BeetleX.Redis.XUnitTest/DBTester_LOCAL_37104.cs
+BeetleX.Redis.XUnitTest/DBTester_REMOTE_37104.cs
+PerformanceTest/PerformanceTest - Backup.csproj
+PerformanceTest/PerformanceTest_BACKUP_45068.csproj
+PerformanceTest/PerformanceTest_BASE_45068.csproj
+PerformanceTest/PerformanceTest_LOCAL_45068.csproj
+PerformanceTest/PerformanceTest_REMOTE_45068.csproj
