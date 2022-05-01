@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BeetleX.Redis.Commands;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,9 +68,9 @@ namespace BeetleX.Redis
             return await Instance.Expireat(key, timestamp);
         }
 
-        public static async ValueTask<long> Expire(string key, int seconds)
+        public static async ValueTask<long> Expire(string key, int seconds, EXPIREType? type)
         {
-            return await Instance.Expire(key, seconds);
+            return await Instance.Expire(key, seconds, type);
         }
 
         public static async ValueTask<long> Exists(params string[] key)

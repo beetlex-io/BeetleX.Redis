@@ -17,6 +17,8 @@ namespace BeetleX.Redis.Commands
 
         public int Seconds { get; set; }
 
+        public EXPIREType? Type { get; set; }
+
         public override bool Read => false;
 
         public override string Name => "EXPIRE";
@@ -26,6 +28,18 @@ namespace BeetleX.Redis.Commands
             base.OnExecute();
             OnWriteKey(Key);
             AddText(Seconds);
+            if (Type != null)
+            {
+                AddText(Enum.GetName(typeof(EXPIREType), Type.Value));
+            }
         }
+    }
+
+    public enum EXPIREType
+    {
+        NX,
+        XX,
+        GT,
+        LT
     }
 }

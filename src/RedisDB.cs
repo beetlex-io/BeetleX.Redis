@@ -260,9 +260,10 @@ namespace BeetleX.Redis
             return (long)result.Value;
         }
 
-        public async ValueTask<long> Expire(string key, int seconds)
+        public async ValueTask<long> Expire(string key, int seconds, EXPIREType? type=null)
         {
             Commands.EXPIRE expire = new Commands.EXPIRE(key, seconds);
+            expire.Type = type;
             var result = await Execute(expire, typeof(string));
             if (result.IsError)
                 throw new RedisException(result.Messge);

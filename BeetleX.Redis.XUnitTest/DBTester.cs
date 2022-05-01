@@ -16,8 +16,7 @@ namespace BeetleX.Redis.XUnitTest
         public DBTester(ITestOutputHelper output)
         {
             this.Console = output;
-            DB.Host.AddWriteHost("127.0.0.1");
-            DB.KeyPrefix = "BeetleX";
+            DB.Host.AddWriteHost("192.168.2.25");
             DB.AutoPing = false;
         }
 
@@ -147,6 +146,8 @@ namespace BeetleX.Redis.XUnitTest
             var add = await DB.Set("mykey", "hello");
             Write(add);
             var expire = await DB.Expire("mykey", 10);
+            Write(expire);
+            expire = await DB.Expire("mykey", 10, Commands.EXPIREType.GT);
             Write(expire);
             var ttl = await DB.Ttl("mykey");
             Write(ttl);
