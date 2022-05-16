@@ -174,7 +174,7 @@ namespace BeetleX.Redis
 
                 try
                 {
-                    Connect(null, mPingClient);
+                    await Connect(null, mPingClient);
                     Commands.PING ping = new Commands.PING(null);
                     var request = new RedisRequest(null, mPingClient, ping, typeof(string));
                     var result = await request.Execute(null);

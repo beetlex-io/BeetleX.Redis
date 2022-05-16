@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BeetleX.Redis.Commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -159,6 +160,20 @@ namespace BeetleX.Redis
             if (result.IsError)
                 throw new RedisException(result.Messge);
             return (long)result.Value;
+        }
+
+        public async Task<HSCAN.Result> Scan(int cursor, int count = 10, string pattern = null)
+        {
+            Commands.HSCAN cmd = new Commands.HSCAN(Key);
+            cmd.DataFormater = this.DataFormater;
+            cmd.Cursor = cursor;
+            cmd.Count = count;
+            cmd.Pattern = pattern;
+            var result = await DB.Execute(cmd, typeof(object));
+            if (result.IsError)
+                throw new RedisException(result.Messge);
+            var sresult = (Commands.HSCAN.Result)result.Value;
+            return sresult;
         }
 
         public async ValueTask<long> StrLen(string field)

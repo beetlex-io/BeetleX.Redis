@@ -68,7 +68,7 @@ namespace BeetleX.Redis
             return await Instance.Expireat(key, timestamp);
         }
 
-        public static async ValueTask<long> Expire(string key, int seconds, EXPIREType? type)
+        public static async ValueTask<long> Expire(string key, int seconds, EXPIREType? type=null)
         {
             return await Instance.Expire(key, seconds, type);
         }

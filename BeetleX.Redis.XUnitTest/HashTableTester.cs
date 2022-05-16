@@ -12,7 +12,6 @@ namespace BeetleX.Redis.XUnitTest
         {
             this.Console = output;
             DB.Host.AddWriteHost("localhost");
-            DB.KeyPrefix = "BeetleX";
         }
 
         private RedisDB DB = new RedisDB(0);
@@ -29,6 +28,25 @@ namespace BeetleX.Redis.XUnitTest
             else
             {
                 Console.WriteLine($">>{result}");
+            }
+        }
+        [Fact]
+        public async void HScan()
+        {
+            await DB.Flushall();
+            var table = DB.CreateHashTable("myhash");
+            var mset = await table.MSet(("field1", "foo"), ("google", "ab"), ("beetlexio", "abc"));
+            Write(mset);
+
+            var result = await table.Scan(0);
+            foreach (var item in result.Values)
+            {
+                Write(item.Value.ToString());
+            }
+            result = await table.Scan(0, 10, "*oo*");
+            foreach (var item in result.Values)
+            {
+                Write(item.Value.ToString());
             }
         }
 
@@ -134,9 +152,9 @@ namespace BeetleX.Redis.XUnitTest
         public async void HMGet()
         {
             await DB.Flushall();
-var table = DB.CreateHashTable("myhash");
-Write(await table.MSet(("field1", "hello"), ("field2", "world")));
-var values = await table.Get<string, string, string>("field1", "field2", "nofield");
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.MSet(("field1", "hello"), ("field2", "world")));
+            var values = await table.Get<string, string, string>("field1", "field2", "nofield");
             Write(values.Item1);
             Write(values.Item2);
             Write(values.Item3);
