@@ -44,7 +44,7 @@ namespace BeetleX.Redis
         {
             PipeStream stream = TcpClient.Stream.ToPipeStream();
 
-            cmd.Execute(db,this, stream);
+            cmd.Execute(db, this, stream);
 
             TcpClient.Stream.Flush();
         }
@@ -86,6 +86,22 @@ namespace BeetleX.Redis
 
         private byte[] mBuffer = new byte[BufferSize];
 
+        public object DeserializeJsonObject(byte[] data, Type type)
+        {
+            try
+            {
+                Memory.Write(data, 0, data.Length);
+                Memory.Position = 0;
+                var task = System.Text.Json.JsonSerializer.DeserializeAsync(Memory, type);
+                return task.Result;
+
+            }
+            catch (Exception e_)
+            {
+                InitStream();
+                throw new RedisException($"json deserialize error {e_.Message}", e_);
+            }
+        }
         public object DeserializeJsonObject(System.IO.Stream steram, int length, Type type)
         {
             try

@@ -60,6 +60,11 @@ namespace BeetleX.Redis.Commands
 
             public byte[] Value { get; set; }
 
+            internal BeetleX.Redis.IDataFormater FormatProvider { get; set; }
+            public T ToObject<T>()
+            {
+                return (T)FormatProvider.DeserializeObject(typeof(T), Value);
+            }
             public override string ToString()
             {
                 if (Value.Length > 0)
@@ -105,9 +110,9 @@ namespace BeetleX.Redis.Commands
                     {
                         if (mIndex % 2 == 0)
                         {
-                            //放弃值读取值
                             mKeyValue.Value = new byte[mItemLength.Value];
                             stream.Read(mKeyValue.Value, 0, mItemLength.Value);
+                            mKeyValue.FormatProvider = cmd.DataFormater;
                             Values.Add(mKeyValue);
                             mKeyValue = new KeyValue();
                         }

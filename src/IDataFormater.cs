@@ -10,6 +10,7 @@ namespace BeetleX.Redis
     {
         void SerializeObject(object data, RedisClient client, PipeStream stream);
 
+        object DeserializeObject(Type type, byte[] data);
         object DeserializeObject(Type type, RedisClient client, PipeStream stream, int length);
 
     }
@@ -21,6 +22,14 @@ namespace BeetleX.Redis
             using (SerializerExpand jsonExpend = client.SerializerExpand)
             {
                 return jsonExpend.DeserializeJsonObject(stream, length, type);
+            }
+        }
+
+        public object DeserializeObject(Type type, byte[] data)
+        {
+            using (SerializerExpand jsonExpend = SerializerExpand.Pop())
+            {
+                return jsonExpend.DeserializeJsonObject(data, type);
             }
         }
 
@@ -51,13 +60,18 @@ namespace BeetleX.Redis
             var buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(length);
             try
             {
-                stream.Read(buffer,0,length);
+                stream.Read(buffer, 0, length);
                 return MessagePackSerializer.Deserialize(type, new ReadOnlyMemory<byte>(buffer, 0, length));
             }
             finally
             {
                 System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
             }
+        }
+
+        public object DeserializeObject(Type type, byte[] data)
+        {
+            return MessagePackSerializer.Deserialize(type, new ReadOnlyMemory<byte>(data, 0, data.Length));
         }
 
         public void SerializeObject(object data, RedisClient client, PipeStream stream)
@@ -88,6 +102,11 @@ namespace BeetleX.Redis
         public object DeserializeObject(Type type, RedisClient client, PipeStream stream, int length)
         {
             return ProtoBuf.Meta.RuntimeTypeModel.Default.Deserialize(stream, null, type, length);
+        }
+
+        public object DeserializeObject(Type type, byte[] data)
+        {
+            return ProtoBuf.Meta.RuntimeTypeModel.Default.Deserialize(type, new ReadOnlySpan<byte>(data));
         }
 
         public void SerializeObject(object data, RedisClient client, PipeStream stream)

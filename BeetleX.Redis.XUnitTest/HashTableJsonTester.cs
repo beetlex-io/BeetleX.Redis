@@ -189,6 +189,18 @@ namespace BeetleX.Redis.XUnitTest
             Write(values.Item5);
         }
 
+        [Fact]
+        public async void HScan()
+        {
+            await DB.Flushall();
+            var table = DB.CreateHashTable("myhash");
+            Write(await table.MSet(("abc", GetEmployee(1)), ("123", GetCustomer(1))));
+            var result = await table.Scan(0);
+            foreach (var item in result.Values)
+            {
+                Write(item.ToObject<Employee>());
+            }
+        }
 
         [Fact]
         public async void HMSet()
