@@ -20,7 +20,7 @@
     <PackageReference Include="BeetleX" Version="1.8.0.3" />
     <PackageReference Include="BeetleX.Tracks" Version="0.8.0" />
     <PackageReference Include="MessagePack" Version="2.1.115" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="protobuf-net" Version="3.0.101" />
   </ItemGroup>
 
