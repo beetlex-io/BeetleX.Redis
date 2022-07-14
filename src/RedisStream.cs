@@ -26,7 +26,7 @@ namespace BeetleX.Redis
 
         public ValueTask<string> Add(Dictionary<string, string> properties, string id = null)
         {
-            return Add(properties, id);
+            return Add(properties, null, id);
         }
 
         public ValueTask<string> Add(params Tuple<string, string>[] properties)
