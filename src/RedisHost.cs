@@ -113,7 +113,9 @@ namespace BeetleX.Redis
 
                     Commands.SELECT select = new Commands.SELECT(DB);
                     var req = new RedisRequest(null, client, select, typeof(string));
-                    return await req.Execute(db);
+                    var t = req.Execute(db);
+                    t.Wait();
+                    return t.Result;
                 }
                 else
                 {
@@ -121,7 +123,6 @@ namespace BeetleX.Redis
                     return new Result { ResultType = ResultType.NetError, Messge = client.TcpClient.LastError.Message };
                 }
             }
-            this.Available = true;
             return new Result { ResultType = ResultType.Simple, Messge = "Connected" };
         }
 
