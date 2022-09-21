@@ -1,8 +1,9 @@
 ﻿using BeetleX.Buffers;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using BeetleX.Tracks;
 
 namespace BeetleX.Redis
@@ -179,7 +180,24 @@ namespace BeetleX.Redis
                 {
                     string value = Value as string;
                     if (value == null)
-                        value = Value.ToString();
+                    {
+                        if (Value is float floatValue)
+                        {
+                            value = floatValue.ToString(CultureInfo.InvariantCulture);
+                        }
+                        else if (Value is double doubleValue)
+                        {
+                            value = doubleValue.ToString(CultureInfo.InvariantCulture);
+                        }
+                        else if (Value is decimal decimalValue)
+                        {
+                            value = decimalValue.ToString(CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            value = Value.ToString();
+                        }
+                    }
                     if (mBuffer == null)
                         mBuffer = new byte[1024 * 1024];
                     int len = Encoding.UTF8.GetBytes(value, 0, value.Length, mBuffer, 0);

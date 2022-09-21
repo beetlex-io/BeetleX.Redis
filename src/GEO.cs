@@ -1,6 +1,7 @@
 ﻿using BeetleX.Redis.Commands;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,7 +32,7 @@ namespace BeetleX.Redis
             if (result.IsError)
                 throw new RedisException(result.Messge);
             if (result.Value != null)
-                return double.Parse(result.Value.ToString());
+                return double.Parse(result.Value.ToString(), CultureInfo.InvariantCulture);
             return -1;
         }
 

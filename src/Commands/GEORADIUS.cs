@@ -1,6 +1,7 @@
 ﻿using BeetleX.Buffers;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace BeetleX.Redis.Commands
@@ -84,9 +85,9 @@ namespace BeetleX.Redis.Commands
                     List<ArrayDataItem> baseinfo = (List<ArrayDataItem>)item.Value;
                     List<ArrayDataItem> locationInfo = (List<ArrayDataItem>)baseinfo[2].Value;
                     ritem.Name = (string)baseinfo[0].Value;
-                    ritem.Value = double.Parse((string)baseinfo[1].Value);
-                    ritem.Longitude = Double.Parse((string)locationInfo[0].Value);
-                    ritem.Latitude = Double.Parse((string)locationInfo[1].Value);
+                    ritem.Value = double.Parse((string)baseinfo[1].Value, CultureInfo.InvariantCulture);
+                    ritem.Longitude = Double.Parse((string)locationInfo[0].Value, CultureInfo.InvariantCulture);
+                    ritem.Latitude = Double.Parse((string)locationInfo[1].Value, CultureInfo.InvariantCulture);
                     result.Data.Add(new ResultItem { Type = ResultType.Object, Data = ritem });
                 }
                 return result;
@@ -170,9 +171,9 @@ namespace BeetleX.Redis.Commands
                     List<ArrayDataItem> baseinfo = (List<ArrayDataItem>)item.Value;
                     List<ArrayDataItem> locationInfo = (List<ArrayDataItem>)baseinfo[2].Value;
                     ritem.Name = (string)baseinfo[0].Value;
-                    ritem.Value = double.Parse((string)baseinfo[1].Value);
-                    ritem.Longitude = Double.Parse((string)locationInfo[0].Value);
-                    ritem.Latitude = Double.Parse((string)locationInfo[1].Value);
+                    ritem.Value = double.Parse((string)baseinfo[1].Value, CultureInfo.InvariantCulture);
+                    ritem.Longitude = Double.Parse((string)locationInfo[0].Value, CultureInfo.InvariantCulture);
+                    ritem.Latitude = Double.Parse((string)locationInfo[1].Value, CultureInfo.InvariantCulture);
                     result.Data.Add(new ResultItem { Type = ResultType.Object, Data = ritem });
                 }
                 return result;

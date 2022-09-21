@@ -1,6 +1,7 @@
 ﻿using BeetleX.Buffers;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace BeetleX.Redis.Commands
@@ -60,8 +61,8 @@ namespace BeetleX.Redis.Commands
                     GeoLocation location = new GeoLocation();
                     if (childs.Count > 0)
                     {
-                        location.Longitude = double.Parse((string)childs[0].Value);
-                        location.Latitude = double.Parse((string)childs[1].Value);
+                        location.Longitude = double.Parse((string)childs[0].Value, CultureInfo.InvariantCulture);
+                        location.Latitude = double.Parse((string)childs[1].Value, CultureInfo.InvariantCulture);
 
                     }
                     data.Data.Add(new ResultItem { Type = ResultType.Object, Data = location });
