@@ -1,6 +1,7 @@
 ﻿using BeetleX.Redis.Commands;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -109,7 +110,7 @@ namespace BeetleX.Redis
             var result = await DB.Execute(cmd, typeof(string));
             if (result.IsError)
                 throw new RedisException(result.Messge);
-            return float.Parse((string)result.Value);
+            return float.Parse((string)result.Value, CultureInfo.InvariantCulture);
         }
 
         public async ValueTask<string[]> Keys()

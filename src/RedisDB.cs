@@ -2,6 +2,7 @@
 using BeetleX.Tracks;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -527,7 +528,7 @@ namespace BeetleX.Redis
             var result = await Execute(cmd, typeof(string));
             if (result.IsError)
                 throw new RedisException(result.Messge);
-            return float.Parse((string)result.Value);
+            return float.Parse((string)result.Value, CultureInfo.InvariantCulture);
         }
 
         public async ValueTask<(T, T1)> MGet<T, T1>(string key1, string key2)
