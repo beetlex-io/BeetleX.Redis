@@ -11,6 +11,14 @@ namespace BeetleX.Redis.Commands
             Password = password;
         }
 
+        public AUTH(string user, string password)
+        {
+	        User = user;
+	        Password = password;
+        }
+
+        public string User { get; set; }
+
         public override bool Read => false;
 
         public override string Name => "AUTH";
@@ -20,6 +28,8 @@ namespace BeetleX.Redis.Commands
         public override void OnExecute()
         {
             base.OnExecute();
+            if (!string.IsNullOrEmpty(User))
+	            AddText(User);
             AddText(Password);
         }
     }

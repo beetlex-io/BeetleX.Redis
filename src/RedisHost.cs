@@ -40,7 +40,9 @@ namespace BeetleX.Redis
 
         public string Password { get; set; }
 
-        public bool Master { get; set; }
+        public string User { get; set; }
+
+		public bool Master { get; set; }
 
         public bool SSL { get; set; } = false;
 
@@ -102,7 +104,7 @@ namespace BeetleX.Redis
                     this.Available = true;
                     if (!string.IsNullOrEmpty(Password))
                     {
-                        Commands.AUTH auth = new Commands.AUTH(Password);
+                        Commands.AUTH auth = new Commands.AUTH(User, Password);
                         RedisRequest request = new RedisRequest(null, client, auth, typeof(string));
                         var result = await request.Execute(db);
                         if (result.ResultType == ResultType.DataError ||
